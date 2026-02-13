@@ -77,7 +77,7 @@ export const dressingRoomScene: SceneConfig = {
         success: [
           { type: 'showText', text: TEXT_ASSETS.dressingRoom.lockboxUseCodeSuccess },
           { type: 'showText', text: TEXT_ASSETS.dressingRoom.lockboxUseCodeSuccessGuide },
-          { type: 'addItem', itemId: 'attic_key', name: '阁楼钥匙' },
+          { type: 'addItem', itemId: 'attic_key', name: 'Attic Key' },
           { type: 'setFlag', flag: 'attic_key', value: true },
           { type: 'setFlag', flag: 'lockbox_locked_active', value: false },
           { type: 'setFlag', flag: 'lockbox_opened_active', value: true },
@@ -107,7 +107,7 @@ export const dressingRoomScene: SceneConfig = {
         success: [
           { type: 'showText', text: TEXT_ASSETS.dressingRoom.trunkUseHookSuccess },
           { type: 'showText', text: TEXT_ASSETS.dressingRoom.trunkUseHookSuccessGuide },
-          { type: 'addItem', itemId: 'yellow_page', name: '黄色书页' },
+          { type: 'addItem', itemId: 'yellow_page', name: 'Yellow Page' },
           { type: 'setFlag', flag: 'trunk_locked_active', value: false },
           { type: 'setFlag', flag: 'trunk_opened_active', value: true },
         ],

@@ -24,7 +24,7 @@ export const atticScene: SceneConfig = {
         success: [
           { type: 'showText', text: TEXT_ASSETS.attic.trunkUseKeySuccess },
           { type: 'showText', text: TEXT_ASSETS.attic.trunkUseKeySuccessGuide },
-          { type: 'addItem', itemId: 'knife', name: '调色刀' },
+          { type: 'addItem', itemId: 'knife', name: 'Knife' },
           { type: 'setFlag', flag: 'attic_trunk_locked_active', value: false },
           { type: 'setFlag', flag: 'attic_trunk_opened_active', value: true },
         ],

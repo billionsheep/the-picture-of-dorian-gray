@@ -539,7 +539,7 @@ export class PlayScene extends Phaser.Scene {
       .setDepth(102)
 
     const hint = this.add
-      .text(GAME_WIDTH / 2 - 320, GAME_HEIGHT / 2 + 86, '点击任意位置关闭', {
+      .text(GAME_WIDTH / 2 - 320, GAME_HEIGHT / 2 + 86, 'Click anywhere to close', {
         color: '#baa58a',
         fontFamily: 'Georgia, serif',
         fontSize: '20px',
@@ -580,7 +580,7 @@ export class PlayScene extends Phaser.Scene {
       .setDepth(142)
 
     const footer = this.add
-      .text(GAME_WIDTH / 2 - 320, GAME_HEIGHT / 2 + 104, '结局已达成', {
+      .text(GAME_WIDTH / 2 - 320, GAME_HEIGHT / 2 + 104, 'Ending reached', {
         color: '#baa58a',
         fontFamily: 'Georgia, serif',
         fontSize: '20px',
