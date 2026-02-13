@@ -134,26 +134,23 @@ const run = async () => {
   const browser = await chromium.launch()
   const page = await browser.newPage({ viewport: VIEWPORT })
   await page.addInitScript(() => {
-    const patchScene = () => {
-      const phaser = window.Phaser
-      if (!phaser?.Scene || phaser.Scene.__opatched) {
-        if (!phaser?.Scene?.__opatched) requestAnimationFrame(patchScene)
+    const patchManager = () => {
+      const manager = window.Phaser?.Scenes?.SceneManager
+      if (!manager || manager.prototype.__opatched) {
+        if (!manager?.prototype?.__opatched) requestAnimationFrame(patchManager)
         return
       }
-      const originalScene = phaser.Scene
-      const proxyScene = new Proxy(originalScene, {
-        construct(target, args, newTarget) {
-          const scene = Reflect.construct(target, args, newTarget)
-          if (scene.scene?.key === 'PlayScene') {
-            window.__playSceneInstance = scene
-          }
-          return scene
-        },
-      })
-      proxyScene.__opatched = true
-      phaser.Scene = proxyScene
+      const originalAdd = manager.prototype.add
+      manager.prototype.add = function (key, scene, autoStart) {
+        const created = originalAdd.call(this, key, scene, autoStart)
+        if (key === 'PlayScene') {
+          window.__playSceneInstance = this.keys?.[key]
+        }
+        return created
+      }
+      manager.prototype.__opatched = true
     }
-    patchScene()
+    patchManager()
   })
   await page.goto(PAGE_URL, { waitUntil: 'networkidle' })
   await page.waitForFunction(() => !!window.__playSceneInstance, { timeout: 15000 })
@@ -210,4 +207,5 @@ const run = async () => {
   result.selectedItemBeforePortrait = selectedKnife
   logAction('Selection readback', { selectedItemId: selectedKnife })
 
-  await clickHotspot(page, 'atticPortrait
+  await clickHotspot(page, 'atticPortraitKnife')
+  await page.waitForFuncti

@@ -19,6 +19,11 @@ interface HotspotVisual {
   area: Phaser.GameObjects.Rectangle
 }
 
+interface TextLayoutResult {
+  pages: string[]
+  fontSize: number
+}
+
 export class PlayScene extends Phaser.Scene {
   private sceneLoader = new SceneLoader()
   private currentSceneId = 'title'
@@ -32,7 +37,7 @@ export class PlayScene extends Phaser.Scene {
   private objectiveLabelText?: Phaser.GameObjects.Text
   private objectiveText?: Phaser.GameObjects.Text
   private settingsButton?: Phaser.GameObjects.Container
-  private settingsMenu?: Phaser.GameObjects.Container
+  private settingsModalContainer?: Phaser.GameObjects.Container
   private hasBgmResource = false
   private musicEnabled = true
   private flags: Record<string, FlagValue> = {}
@@ -74,7 +79,7 @@ export class PlayScene extends Phaser.Scene {
     this.isDialogueOpen = false
     this.isSettingsOpen = false
     this.activeDialog = undefined
-    this.settingsMenu = undefined
+    this.settingsModalContainer = undefined
     this.settingsButton = undefined
     this.objectiveLabelText = undefined
     this.objectiveText = undefined
@@ -195,17 +200,21 @@ export class PlayScene extends Phaser.Scene {
   private layoutTopUi(): void {
     const { width } = this.getViewportSize()
     const rightPadding = 18
+    const objectiveMaxWidth = Math.min(420, Math.max(260, Math.floor(width * 0.42)))
 
     if (this.objectiveLabelText) {
       this.objectiveLabelText.setPosition(width - rightPadding, 12)
     }
 
     if (this.objectiveText) {
+      this.objectiveText.setWordWrapWidth(objectiveMaxWidth, true)
       this.objectiveText.setPosition(width - rightPadding, 34)
     }
 
     if (this.settingsButton) {
-      this.settingsButton.setPosition(width - 102, 74)
+      const objectiveBottom = this.objectiveText ? this.objectiveText.getBounds().bottom : 34
+      const settingsY = Math.max(74, objectiveBottom + 12 + 17)
+      this.settingsButton.setPosition(width - 102, settingsY)
     }
   }
 
@@ -216,6 +225,7 @@ export class PlayScene extends Phaser.Scene {
 
     const objective = this.getObjective(this.currentSceneId, this.flags, this.inventory)
     this.objectiveText.setText(objective)
+    this.layoutTopUi()
   }
 
   private getObjective(sceneId: string, flags: Record<string, FlagValue>, inventory: InventoryItem[]): string {
@@ -270,39 +280,43 @@ export class PlayScene extends Phaser.Scene {
   }
 
   private openSettingsMenu(): void {
-    if (this.settingsMenu) {
+    if (this.settingsModalContainer) {
       return
     }
 
     this.isSettingsOpen = true
     const { width, height } = this.getViewportSize()
-    const menuX = width - 190
+    const menuX = width / 2
+    const menuY = height / 2
 
     const overlay = this.add
-      .rectangle(0, 0, width, height, 0x000000, 0.45)
+      .rectangle(0, 0, width, height, 0x000000, 0.35)
       .setOrigin(0)
       .setDepth(90)
+      .setInteractive({ useHandCursor: true })
 
     const panel = this.add
-      .rectangle(menuX, 188, 300, 240, 0x1c1c1c, 0.96)
+      .rectangle(menuX, menuY, 360, 280, 0x1c1c1c, 0.96)
       .setOrigin(0.5)
       .setStrokeStyle(2, 0xcdb58f)
       .setDepth(91)
+      .setInteractive({ useHandCursor: true })
 
     const title = this.add
-      .text(menuX - 110, 88, 'Settings', {
+      .text(menuX, menuY - 104, 'Settings', {
         color: '#f4f0e6',
         fontFamily: 'Georgia, serif',
         fontSize: '20px',
       })
+      .setOrigin(0.5)
       .setDepth(92)
 
-    const storyButton = this.createMenuButton(menuX, 132, 'Story / Background', () => {
+    const storyButton = this.createMenuButton(menuX, menuY - 52, 'Story / Background', () => {
       this.closeSettingsMenu()
       void this.showDialogue(TEXT_ASSETS.system.storyBackground)
     })
 
-    const musicButton = this.createMenuButton(menuX, 178, this.musicEnabled ? 'Music: On' : 'Music: Off', () => {
+    const musicButton = this.createMenuButton(menuX, menuY - 8, this.musicEnabled ? 'Music: On' : 'Music: Off', () => {
       const message = this.toggleMusic()
       this.closeSettingsMenu()
       if (message) {
@@ -310,15 +324,23 @@ export class PlayScene extends Phaser.Scene {
       }
     })
 
-    const restartButton = this.createMenuButton(menuX, 224, 'Restart', () => {
+    const restartButton = this.createMenuButton(menuX, menuY + 36, 'Restart', () => {
       this.restartGame()
     })
 
-    const backButton = this.createMenuButton(menuX, 270, 'Back', () => {
+    const backButton = this.createMenuButton(menuX, menuY + 80, 'Back', () => {
       this.closeSettingsMenu()
     })
 
-    this.settingsMenu = this.add
+    overlay.on('pointerdown', () => {
+      this.closeSettingsMenu()
+    })
+
+    panel.on('pointerdown', (_pointer: Phaser.Input.Pointer, _localX: number, _localY: number, event: Phaser.Types.Input.EventData) => {
+      event.stopPropagation()
+    })
+
+    this.settingsModalContainer = this.add
       .container(0, 0, [overlay, panel, title, ...storyButton, ...musicButton, ...restartButton, ...backButton])
       .setDepth(90)
   }
@@ -354,8 +376,8 @@ export class PlayScene extends Phaser.Scene {
   }
 
   private closeSettingsMenu(): void {
-    this.settingsMenu?.destroy(true)
-    this.settingsMenu = undefined
+    this.settingsModalContainer?.destroy(true)
+    this.settingsModalContainer = undefined
     this.isSettingsOpen = false
   }
 
@@ -587,9 +609,115 @@ export class PlayScene extends Phaser.Scene {
     this.hudContainer?.add(this.inventoryUi)
   }
 
+  private buildTextLayoutPages(
+    text: string,
+    maxWidth: number,
+    maxHeight: number,
+    startFontSize: number,
+    minFontSize: number,
+  ): TextLayoutResult {
+    const probe = this.add
+      .text(-10000, -10000, text, {
+        color: '#f4f0e6',
+        fontFamily: 'Georgia, serif',
+        fontSize: `${startFontSize}px`,
+        wordWrap: { width: maxWidth, useAdvancedWrap: true },
+      })
+      .setVisible(false)
+
+    let fontSize = startFontSize
+    while (fontSize > minFontSize) {
+      probe.setFontSize(fontSize)
+      probe.setText(text)
+      if (probe.height <= maxHeight) {
+        probe.destroy()
+        return { pages: [text], fontSize }
+      }
+      fontSize -= 2
+    }
+
+    fontSize = minFontSize
+    probe.setFontSize(fontSize)
+    const lines = text.split('\n')
+    const pages: string[] = []
+    let current: string[] = []
+
+    const pushCurrent = () => {
+      if (current.length > 0) {
+        pages.push(current.join('\n'))
+        current = []
+      }
+    }
+
+    const splitLongLine = (line: string): string[] => {
+      const segments: string[] = []
+      const words = line.split(' ')
+      let segment = ''
+
+      words.forEach((word) => {
+        const next = segment ? `${segment} ${word}` : word
+        probe.setText(next)
+        if (probe.height <= maxHeight || !segment) {
+          segment = next
+        } else {
+          segments.push(segment)
+          segment = word
+        }
+      })
+
+      if (segment) {
+        segments.push(segment)
+      }
+
+      return segments.length > 0 ? segments : [line]
+    }
+
+    lines.forEach((line) => {
+      const candidate = [...current, line]
+      probe.setText(candidate.join('\n'))
+      if (probe.height <= maxHeight) {
+        current = candidate
+        return
+      }
+
+      if (current.length > 0) {
+        pushCurrent()
+      }
+
+      probe.setText(line)
+      if (probe.height <= maxHeight) {
+        current = [line]
+        return
+      }
+
+      const splitLines = splitLongLine(line)
+      splitLines.forEach((piece) => {
+        const pieceCandidate = [...current, piece]
+        probe.setText(pieceCandidate.join('\n'))
+        if (probe.height <= maxHeight) {
+          current = pieceCandidate
+        } else {
+          pushCurrent()
+          current = [piece]
+        }
+      })
+    })
+
+    pushCurrent()
+    probe.destroy()
+
+    return { pages: pages.length > 0 ? pages : [text], fontSize }
+  }
+
   private showDialogue(text: string): Promise<void> {
     this.isDialogueOpen = true
     const { width, height } = this.getViewportSize()
+    const panelWidth = 760
+    const panelHeight = 320
+    const panelInnerWidth = panelWidth - 80
+    const panelInnerHeight = panelHeight - 110
+    const layout = this.buildTextLayoutPages(text, panelInnerWidth, panelInnerHeight, 28, 18)
+    let pageIndex = 0
 
     const overlay = this.add
       .rectangle(0, 0, width, height, 0x000000, 0.7)
@@ -598,31 +726,45 @@ export class PlayScene extends Phaser.Scene {
       .setInteractive({ useHandCursor: true })
 
     const panel = this.add
-      .rectangle(width / 2, height / 2, 720, 260, 0x1e1e1e, 0.95)
+      .rectangle(width / 2, height / 2, panelWidth, panelHeight, 0x1e1e1e, 0.95)
       .setStrokeStyle(2, 0xd6c2a1)
       .setDepth(101)
 
     const textObject = this.add
-      .text(width / 2 - 320, height / 2 - 90, text, {
+      .text(width / 2 - panelWidth / 2 + 40, height / 2 - panelHeight / 2 + 32, layout.pages[0], {
         color: '#f4f0e6',
         fontFamily: 'Georgia, serif',
-        fontSize: '28px',
-        wordWrap: { width: 640 },
+        fontSize: `${layout.fontSize}px`,
+        wordWrap: { width: panelInnerWidth, useAdvancedWrap: true },
       })
+      .setOrigin(0, 0)
       .setDepth(102)
 
     const hint = this.add
-      .text(width / 2 - 320, height / 2 + 86, 'Click anywhere to close', {
+      .text(
+        width / 2 - panelWidth / 2 + 40,
+        height / 2 + panelHeight / 2 - 34,
+        layout.pages.length > 1 ? `Click to continue (${pageIndex + 1}/${layout.pages.length})` : 'Click anywhere to close',
+        {
         color: '#baa58a',
         fontFamily: 'Georgia, serif',
         fontSize: '20px',
-      })
+      },
+      )
+      .setOrigin(0, 0)
       .setDepth(102)
 
     this.activeDialog = this.add.container(0, 0, [overlay, panel, textObject, hint]).setDepth(100)
 
     return new Promise((resolve) => {
-      overlay.once('pointerdown', () => {
+      overlay.on('pointerdown', () => {
+        if (pageIndex < layout.pages.length - 1) {
+          pageIndex += 1
+          textObject.setText(layout.pages[pageIndex])
+          hint.setText(`Click to continue (${pageIndex + 1}/${layout.pages.length})`)
+          return
+        }
+
         this.activeDialog?.destroy(true)
         this.activeDialog = undefined
         this.isDialogueOpen = false
@@ -635,38 +777,55 @@ export class PlayScene extends Phaser.Scene {
     this.closeSettingsMenu()
     this.isEnding = true
     const { width, height } = this.getViewportSize()
+    const panelWidth = 820
+    const panelHeight = 440
+    const panelInnerWidth = panelWidth - 88
+    const panelInnerHeight = panelHeight - 190
+    const layout = this.buildTextLayoutPages(text, panelInnerWidth, panelInnerHeight, 30, 18)
+    let pageIndex = 0
 
     const overlay = this.add.rectangle(0, 0, width, height, 0x000000, 0.82).setOrigin(0).setDepth(140)
     const panel = this.add
-      .rectangle(width / 2, height / 2, 760, 300, 0x161616, 0.95)
+      .rectangle(width / 2, height / 2, panelWidth, panelHeight, 0x161616, 0.95)
       .setStrokeStyle(2, 0xd6c2a1)
       .setDepth(141)
 
     const content = this.add
-      .text(width / 2 - 320, height / 2 - 70, text, {
+      .text(width / 2 - panelWidth / 2 + 44, height / 2 - panelHeight / 2 + 36, layout.pages[0], {
         color: '#f4f0e6',
         fontFamily: 'Georgia, serif',
-        fontSize: '30px',
-        wordWrap: { width: 640 },
+        fontSize: `${layout.fontSize}px`,
+        wordWrap: { width: panelInnerWidth, useAdvancedWrap: true },
       })
+      .setOrigin(0, 0)
       .setDepth(142)
 
     const footer = this.add
-      .text(width / 2 - 320, height / 2 + 104, 'Ending reached', {
+      .text(width / 2 - panelWidth / 2 + 44, height / 2 + panelHeight / 2 - 132, 'Ending reached', {
         color: '#baa58a',
         fontFamily: 'Georgia, serif',
         fontSize: '20px',
       })
+      .setOrigin(0, 0)
+      .setDepth(142)
+
+    const pageHint = this.add
+      .text(width / 2 - panelWidth / 2 + 44, height / 2 + panelHeight / 2 - 104, '', {
+        color: '#baa58a',
+        fontFamily: 'Georgia, serif',
+        fontSize: '18px',
+      })
+      .setOrigin(0, 0)
       .setDepth(142)
 
     const restartButton = this.add
-      .rectangle(width / 2 - 130, height / 2 + 148, 220, 42, 0x3a3a3a, 0.98)
+      .rectangle(width / 2 - 130, height / 2 + panelHeight / 2 - 46, 220, 42, 0x3a3a3a, 0.98)
       .setStrokeStyle(1, 0xcdb58f)
       .setDepth(142)
       .setInteractive({ useHandCursor: true })
 
     const restartLabel = this.add
-      .text(width / 2 - 130, height / 2 + 148, 'Restart', {
+      .text(width / 2 - 130, height / 2 + panelHeight / 2 - 46, 'Restart', {
         color: '#f4f0e6',
         fontFamily: 'Georgia, serif',
         fontSize: '18px',
@@ -675,13 +834,13 @@ export class PlayScene extends Phaser.Scene {
       .setDepth(143)
 
     const titleButton = this.add
-      .rectangle(width / 2 + 130, height / 2 + 148, 220, 42, 0x3a3a3a, 0.98)
+      .rectangle(width / 2 + 130, height / 2 + panelHeight / 2 - 46, 220, 42, 0x3a3a3a, 0.98)
       .setStrokeStyle(1, 0xcdb58f)
       .setDepth(142)
       .setInteractive({ useHandCursor: true })
 
     const titleLabel = this.add
-      .text(width / 2 + 130, height / 2 + 148, 'Back to Title', {
+      .text(width / 2 + 130, height / 2 + panelHeight / 2 - 46, 'Back to Title', {
         color: '#f4f0e6',
         fontFamily: 'Georgia, serif',
         fontSize: '18px',
@@ -689,7 +848,40 @@ export class PlayScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setDepth(143)
 
+    const setTitleButtonVisible = (visible: boolean) => {
+      titleButton.setVisible(visible)
+      titleLabel.setVisible(visible)
+      if (visible) {
+        titleButton.setInteractive({ useHandCursor: true })
+      } else {
+        titleButton.disableInteractive()
+      }
+    }
+
+    const updatePageState = () => {
+      content.setText(layout.pages[pageIndex])
+      const isLast = pageIndex === layout.pages.length - 1
+
+      if (!isLast) {
+        restartLabel.setText('Next')
+        pageHint.setText(`Page ${pageIndex + 1}/${layout.pages.length}`)
+        setTitleButtonVisible(false)
+      } else {
+        restartLabel.setText('Restart')
+        pageHint.setText(layout.pages.length > 1 ? `Page ${layout.pages.length}/${layout.pages.length}` : '')
+        setTitleButtonVisible(true)
+      }
+    }
+
+    updatePageState()
+
     restartButton.on('pointerdown', () => {
+      if (pageIndex < layout.pages.length - 1) {
+        pageIndex += 1
+        updatePageState()
+        return
+      }
+
       this.restartGame()
     })
 
@@ -698,7 +890,7 @@ export class PlayScene extends Phaser.Scene {
     })
 
     this.add
-      .container(0, 0, [overlay, panel, content, footer, restartButton, restartLabel, titleButton, titleLabel])
+      .container(0, 0, [overlay, panel, content, footer, pageHint, restartButton, restartLabel, titleButton, titleLabel])
       .setDepth(140)
   }
 }
