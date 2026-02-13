@@ -78,6 +78,7 @@ export const dressingRoomScene: SceneConfig = {
           { type: 'showText', text: TEXT_ASSETS.dressingRoom.lockboxUseCodeSuccess },
           { type: 'showText', text: TEXT_ASSETS.dressingRoom.lockboxUseCodeSuccessGuide },
           { type: 'addItem', itemId: 'attic_key', name: 'Attic Key' },
+          { type: 'removeItem', itemId: 'code_1230' },
           { type: 'setFlag', flag: 'attic_key', value: true },
           { type: 'setFlag', flag: 'lockbox_locked_active', value: false },
           { type: 'setFlag', flag: 'lockbox_opened_active', value: true },

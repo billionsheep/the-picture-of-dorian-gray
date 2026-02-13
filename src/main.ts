@@ -11,8 +11,12 @@ if (!app) {
 new Phaser.Game({
   type: Phaser.AUTO,
   parent: app,
-  width: 960,
-  height: 540,
+  width: window.innerWidth,
+  height: window.innerHeight,
+  scale: {
+    mode: Phaser.Scale.RESIZE,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+  },
   backgroundColor: '#000000',
   scene: [PlayScene],
 })

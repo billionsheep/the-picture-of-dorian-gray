@@ -144,10 +144,16 @@ export const studioScene: SceneConfig = {
       label: 'Exit',
       rect: { x: 18, y: 210, w: 70, h: 170 },
       requireFlag: 'exit_ready_active',
-      onClick: [
-        { type: 'showText', text: TEXT_ASSETS.studio.exitToTheatre },
-        { type: 'gotoScene', sceneId: 'dressingRoom' },
-      ],
+      onClick: [{ type: 'showText', text: TEXT_ASSETS.studio.exitLocked }],
+      onUse: {
+        accepts: ['theatre_ticket'],
+        success: [
+          { type: 'showText', text: TEXT_ASSETS.studio.exitToTheatre },
+          { type: 'removeItem', itemId: 'theatre_ticket' },
+          { type: 'gotoScene', sceneId: 'dressingRoom' },
+        ],
+        fail: [{ type: 'showText', text: TEXT_ASSETS.studio.exitLocked }],
+      },
     },
     {
       id: 'mirror_first',
