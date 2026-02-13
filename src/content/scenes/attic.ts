@@ -49,14 +49,29 @@ export const atticScene: SceneConfig = {
       onClick: [{ type: 'showText', text: TEXT_ASSETS.attic.portraitPressure }],
     },
     {
-      id: 'attic_portrait_knife',
+      id: 'attic_portrait_knife_unburned',
       label: 'Portrait Knife',
       rect: { x: 610, y: 430, w: 250, h: 70 },
-      requireFlag: 'portrait_knife_active',
+      requireFlag: 'page_unburned',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.attic.portraitKnifePrompt }],
       onUse: {
         accepts: ['knife'],
-        success: [{ type: 'end', text: TEXT_ASSETS.attic.knifeEnding }],
+        success: [{ type: 'end', text: TEXT_ASSETS.attic.endingConfession }],
+        fail: [
+          { type: 'showText', text: TEXT_ASSETS.attic.portraitKnifeFail },
+          { type: 'showText', text: TEXT_ASSETS.attic.portraitKnifeFailGuide },
+        ],
+      },
+    },
+    {
+      id: 'attic_portrait_knife_burned',
+      label: 'Portrait Knife',
+      rect: { x: 610, y: 430, w: 250, h: 70 },
+      requireFlag: 'page_burned',
+      onClick: [{ type: 'showText', text: TEXT_ASSETS.attic.portraitKnifePrompt }],
+      onUse: {
+        accepts: ['knife'],
+        success: [{ type: 'end', text: TEXT_ASSETS.attic.endingHypocrisy }],
         fail: [
           { type: 'showText', text: TEXT_ASSETS.attic.portraitKnifeFail },
           { type: 'showText', text: TEXT_ASSETS.attic.portraitKnifeFailGuide },

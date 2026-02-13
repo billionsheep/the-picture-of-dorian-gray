@@ -34,17 +34,17 @@ export const TEXT_ASSETS = {
     letterRepeat: '墨迹已经干了。\n时间还在滴。12:30。',
 
     drawerLocked: '锁住了。像一个体面人的微笑。',
-    drawerUseFail: '钥匙孔没有反应。\n它不认识这种冲动。',
+    drawerUseFail: '锁孔冷得像一颗牙。\n我不是缺钥匙。\n我缺的是那个时间。那封信里写过。',
     drawerUseFailGuide: '先去看信，记下 12:30。\n再把这个时间用在抽屉上。',
     drawerUnlocked: '咔哒。有什么东西在里面等了很久。',
     drawerUnlockedGuide: '你拿到了挂钩和后台通行票。\n下一步：试着用挂钩处理幕布。',
     drawerRepeatOpen: '抽屉张着嘴。\n里面只剩下木头的气味。',
     drawerOpenedUseHook: '你把挂钩在手里掂了掂。\n它更适合布，不适合木头。',
-    drawerOpenedUseOtherFail: '空抽屉不会再给你答案。',
+    drawerOpenedUseOtherFail: '空抽屉不会再吐出答案。\n房间里还有一块东西在“遮”。\n它比锁更怕我看见。',
     drawerOpenedUseOtherGuide: '去找还没处理的目标。\n现在最可疑的是那块幕布。',
 
     curtainLocked: '别碰它。别现在。\n你还没有准备好。',
-    curtainUseHookFail: '布料纹丝不动。\n你需要更“对”的形状。',
+    curtainUseHookFail: '布料纹丝不动。\n我的手太干净了。\n让抽屉里那枚金属去做脏活。',
     curtainUseHookFailGuide: '试着先选中“挂钩”，再点幕布。\n顺序不对就不会生效。',
     curtainUseHookSuccess: '挂钩咬住了布边。\n一寸一寸，旧秘密见光。',
     curtainUseHookSuccessGuide: '画像已经露出。\n你可以带着票从出口去剧院后台。',
@@ -88,6 +88,12 @@ export const TEXT_ASSETS = {
     trunkUseHookFailGuide: '这道缝需要“挂钩”。\n先在背包选中挂钩，再点箱子。',
     trunkOpened: '空箱里只剩布料的褶皱。\n像退场后的皮肤。',
 
+    ashtrayHint: '烟灰缸里有新灰。\n不是香烟的。像纸。\n有人在这里等我把某一页变成空白。',
+    ashtrayUsePageFail: '火在等“纸”。\n那页泛黄的东西——\n它卡在戏服箱的缝里，像在求救。',
+    ashtrayUsePageSuccess:
+      '火苗舔过字迹。\n茜比尔的名字先黑掉，像被抹去。\n烟很呛，但这很好。\n只要没人读过这页纸——她就没有死。\n我也就没有罪。',
+    ashtrayAfterBurned: '灰烬趴在缸底。\n像一张闭上的嘴。\n你以为它不会再说话。',
+
     exitLocked: '通往阁楼的门没有把手。\n锁孔在等一把真正的钥匙。',
     exitToAttic: '钥匙进锁，发出细小的骨响。\n楼梯向上，像喉咙。',
   },
@@ -101,12 +107,18 @@ export const TEXT_ASSETS = {
     trunkOpened: '箱子里只剩冷木味。\n刀已经在你手里。',
 
     portraitPressure: '画像回看你。\n像在等你先承认。',
-    portraitKnifePrompt: '刀尖停在画布前。\n再近一点，就没有回头路。',
+    portraitPressureUnburned: '画像回看我。\n口袋里那页纸在发热。\n像提醒：我还没把自己说完。',
+    portraitPressureBurned: '画像回看我。\n我闻到灰。\n灰跟着我上楼。\n像一双手，擦不干净。',
+    portraitKnifePrompt: '刀尖停在画布前。\n再近一点，就没有回头路。\n你会听见——\n你自己在求饶。',
     portraitKnifeFail: '你的手在抖。\n你需要一把真正能结束它的刀。',
     portraitKnifeFailGuide: '先去铁箱拿刀。\n拿到后在背包选中“调色刀”再碰画像。',
 
     leaveEnding: '你转身离开阁楼。\n门在身后慢慢合上。\n画像还在那儿，继续替你腐烂。',
     knifeEnding: '你把刀送进画布。\n一声闷响后，整栋屋子一起吸气。\n你终于听见自己的心跳，像陌生人的脚步。',
+    endingConfession:
+      '（闪白。像镜子碎裂。）\n刀刃没入画布。\n我听见一声叹息——是我的，还是它的？\n痛终于来了。干净、准确。\n像迟到多年的判决。\n他们破门而入。\n墙上的画像完美无瑕，仍年轻，仍在笑。\n地上躺着一个枯槁的老人，胸口插着刀。\n他的手指干瘪，却紧紧箍着一枚戒指。\n直到那枚戒指，他们才认出那是谁。',
+    endingHypocrisy:
+      '（没有闪白。只有黑。像墨水倒进眼睛。）\n证据都烧了。\n没什么能审判我。\n我只要毁掉这幅画——\n我就能永远……\n永远……永远……\n为什么要笑？\n别笑。别用我的脸笑。\n（字开始断开。）\n我没有罪我没有罪我没有——\n后来人们发现了一具尸体。\n哪怕死了，那张老脸上仍写着贪婪和惊恐。\n他至死都以为自己骗过了世界。\n但墙上的画像知道：\n从未有人真正逃脱。',
   },
 } as const
 

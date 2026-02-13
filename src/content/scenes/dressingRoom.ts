@@ -7,6 +7,9 @@ export const dressingRoomScene: SceneConfig = {
   startActions: [{ type: 'showText', text: TEXT_ASSETS.dressingRoom.intro }],
   flagsInitial: {
     attic_key: false,
+    page_burned: false,
+    page_unburned: true,
+    ashtray_burned: false,
 
     playbill_first_active: true,
     playbill_repeat_active: false,
@@ -37,6 +40,31 @@ export const dressingRoomScene: SceneConfig = {
       rect: { x: 130, y: 120, w: 180, h: 130 },
       requireFlag: 'playbill_repeat_active',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.dressingRoom.playbillRepeat }],
+    },
+    {
+      id: 'ashtray_unburned',
+      label: 'Ashtray',
+      rect: { x: 500, y: 120, w: 140, h: 110 },
+      requireFlag: 'page_unburned',
+      onClick: [{ type: 'showText', text: TEXT_ASSETS.dressingRoom.ashtrayHint }],
+      onUse: {
+        accepts: ['yellow_page'],
+        success: [
+          { type: 'showText', text: TEXT_ASSETS.dressingRoom.ashtrayUsePageSuccess },
+          { type: 'setFlag', flag: 'page_burned', value: true },
+          { type: 'setFlag', flag: 'page_unburned', value: false },
+          { type: 'setFlag', flag: 'ashtray_burned', value: true },
+          { type: 'removeItem', itemId: 'yellow_page' },
+        ],
+        fail: [{ type: 'showText', text: TEXT_ASSETS.dressingRoom.ashtrayUsePageFail }],
+      },
+    },
+    {
+      id: 'ashtray_burned',
+      label: 'Ashtray',
+      rect: { x: 500, y: 120, w: 140, h: 110 },
+      requireFlag: 'ashtray_burned',
+      onClick: [{ type: 'showText', text: TEXT_ASSETS.dressingRoom.ashtrayAfterBurned }],
     },
     {
       id: 'lockbox_locked',
