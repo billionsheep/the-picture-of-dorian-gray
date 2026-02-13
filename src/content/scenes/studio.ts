@@ -4,23 +4,26 @@ import { TEXT_ASSETS } from '../textAssets'
 export const studioScene: SceneConfig = {
   id: 'studio',
   title: 'Basil Studio',
+  startActions: [{ type: 'showText', text: TEXT_ASSETS.studio.intro }],
   flagsInitial: {
     drawer_open: false,
-    hook_taken: false,
+    has_ticket: false,
     curtain_lifted: false,
-    letter_read: false,
-    mirror_seen: false,
-    clock_seen: false,
-    paintbox_seen: false,
-    ring_seen: false,
-    window_seen: false,
 
     letter_first_active: true,
     letter_repeat_active: false,
 
+    drawer_locked_active: true,
+    drawer_opened_active: false,
+
+    portrait_locked_active: true,
+    portrait_seen_active: false,
+
+    exit_locked_active: true,
+    exit_ready_active: false,
+
     mirror_first_active: true,
     mirror_repeat_active: false,
-    mirror_after_drawer_active: false,
 
     clock_first_active: true,
     clock_repeat_active: false,
@@ -33,11 +36,6 @@ export const studioScene: SceneConfig = {
 
     window_first_active: true,
     window_repeat_active: false,
-
-    drawer_locked_active: true,
-    drawer_opened_active: false,
-
-    curtain_locked_active: true,
   },
   hotspots: [
     {
@@ -48,7 +46,6 @@ export const studioScene: SceneConfig = {
       onClick: [
         { type: 'showText', text: TEXT_ASSETS.studio.letterFirst },
         { type: 'addItem', itemId: 'code_1230', name: '密码：12:30' },
-        { type: 'setFlag', flag: 'letter_read', value: true },
         { type: 'setFlag', flag: 'letter_first_active', value: false },
         { type: 'setFlag', flag: 'letter_repeat_active', value: true },
       ],
@@ -71,12 +68,11 @@ export const studioScene: SceneConfig = {
         success: [
           { type: 'showText', text: TEXT_ASSETS.studio.drawerUnlocked },
           { type: 'addItem', itemId: 'hook', name: '挂钩' },
+          { type: 'addItem', itemId: 'theatre_ticket', name: '后台通行票' },
+          { type: 'setFlag', flag: 'has_ticket', value: true },
           { type: 'setFlag', flag: 'drawer_open', value: true },
-          { type: 'setFlag', flag: 'hook_taken', value: true },
           { type: 'setFlag', flag: 'drawer_locked_active', value: false },
           { type: 'setFlag', flag: 'drawer_opened_active', value: true },
-          { type: 'setFlag', flag: 'mirror_repeat_active', value: false },
-          { type: 'setFlag', flag: 'mirror_after_drawer_active', value: true },
         ],
         fail: [{ type: 'showText', text: TEXT_ASSETS.studio.drawerUseFail }],
       },
@@ -97,26 +93,49 @@ export const studioScene: SceneConfig = {
       id: 'curtain_locked',
       label: 'Curtain',
       rect: { x: 640, y: 100, w: 250, h: 340 },
-      requireFlag: 'curtain_locked_active',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.studio.curtainLocked }],
       onUse: {
         accepts: ['hook'],
         success: [
           { type: 'showText', text: TEXT_ASSETS.studio.curtainUseHookSuccess },
           { type: 'setFlag', flag: 'curtain_lifted', value: true },
-          { type: 'setFlag', flag: 'curtain_locked_active', value: false },
+          { type: 'setFlag', flag: 'portrait_locked_active', value: false },
+          { type: 'setFlag', flag: 'portrait_seen_active', value: true },
+          { type: 'setFlag', flag: 'exit_locked_active', value: false },
+          { type: 'setFlag', flag: 'exit_ready_active', value: true },
         ],
         fail: [{ type: 'showText', text: TEXT_ASSETS.studio.curtainUseHookFail }],
       },
     },
     {
-      id: 'portrait',
+      id: 'portrait_locked',
       label: 'Portrait',
       rect: { x: 656, y: 120, w: 220, h: 300 },
-      requireFlag: 'curtain_lifted',
+      requireFlag: 'portrait_locked_active',
+      onClick: [{ type: 'showText', text: TEXT_ASSETS.studio.portraitLocked }],
+    },
+    {
+      id: 'portrait_seen',
+      label: 'Portrait',
+      rect: { x: 656, y: 120, w: 220, h: 300 },
+      requireFlag: 'portrait_seen_active',
+      onClick: [{ type: 'showText', text: TEXT_ASSETS.studio.portraitSeen }],
+    },
+    {
+      id: 'exit_locked',
+      label: 'Exit',
+      rect: { x: 18, y: 210, w: 70, h: 170 },
+      requireFlag: 'exit_locked_active',
+      onClick: [{ type: 'showText', text: TEXT_ASSETS.studio.exitLocked }],
+    },
+    {
+      id: 'exit_to_theatre',
+      label: 'Exit',
+      rect: { x: 18, y: 210, w: 70, h: 170 },
+      requireFlag: 'exit_ready_active',
       onClick: [
-        { type: 'showText', text: TEXT_ASSETS.studio.portraitOpen },
-        { type: 'end', text: TEXT_ASSETS.studio.end },
+        { type: 'showText', text: TEXT_ASSETS.studio.exitToTheatre },
+        { type: 'gotoScene', sceneId: 'dressingRoom' },
       ],
     },
     {
@@ -126,7 +145,6 @@ export const studioScene: SceneConfig = {
       requireFlag: 'mirror_first_active',
       onClick: [
         { type: 'showText', text: TEXT_ASSETS.studio.mirrorFirst },
-        { type: 'setFlag', flag: 'mirror_seen', value: true },
         { type: 'setFlag', flag: 'mirror_first_active', value: false },
         { type: 'setFlag', flag: 'mirror_repeat_active', value: true },
       ],
@@ -139,20 +157,12 @@ export const studioScene: SceneConfig = {
       onClick: [{ type: 'showText', text: TEXT_ASSETS.studio.mirrorRepeat }],
     },
     {
-      id: 'mirror_after_drawer',
-      label: 'Mirror',
-      rect: { x: 40, y: 120, w: 180, h: 200 },
-      requireFlag: 'mirror_after_drawer_active',
-      onClick: [{ type: 'showText', text: TEXT_ASSETS.studio.mirrorAfterDrawerOpen }],
-    },
-    {
       id: 'clock_first',
       label: 'Clock',
       rect: { x: 430, y: 80, w: 100, h: 100 },
       requireFlag: 'clock_first_active',
       onClick: [
         { type: 'showText', text: TEXT_ASSETS.studio.clockFirst },
-        { type: 'setFlag', flag: 'clock_seen', value: true },
         { type: 'setFlag', flag: 'clock_first_active', value: false },
         { type: 'setFlag', flag: 'clock_repeat_active', value: true },
       ],
@@ -171,7 +181,6 @@ export const studioScene: SceneConfig = {
       requireFlag: 'paintbox_first_active',
       onClick: [
         { type: 'showText', text: TEXT_ASSETS.studio.paintboxFirst },
-        { type: 'setFlag', flag: 'paintbox_seen', value: true },
         { type: 'setFlag', flag: 'paintbox_first_active', value: false },
         { type: 'setFlag', flag: 'paintbox_repeat_active', value: true },
       ],
@@ -190,7 +199,6 @@ export const studioScene: SceneConfig = {
       requireFlag: 'ring_first_active',
       onClick: [
         { type: 'showText', text: TEXT_ASSETS.studio.ringFirst },
-        { type: 'setFlag', flag: 'ring_seen', value: true },
         { type: 'setFlag', flag: 'ring_first_active', value: false },
         { type: 'setFlag', flag: 'ring_repeat_active', value: true },
       ],
@@ -209,7 +217,6 @@ export const studioScene: SceneConfig = {
       requireFlag: 'window_first_active',
       onClick: [
         { type: 'showText', text: TEXT_ASSETS.studio.windowFirst },
-        { type: 'setFlag', flag: 'window_seen', value: true },
         { type: 'setFlag', flag: 'window_first_active', value: false },
         { type: 'setFlag', flag: 'window_repeat_active', value: true },
       ],

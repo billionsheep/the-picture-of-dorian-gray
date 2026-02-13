@@ -19,6 +19,7 @@ interface HotspotVisual {
 
 export class PlayScene extends Phaser.Scene {
   private sceneLoader = new SceneLoader()
+  private currentSceneId = 'studio'
   private hotspotVisuals: HotspotVisual[] = []
   private activeDialog?: Phaser.GameObjects.Container
   private isDialogueOpen = false
@@ -33,8 +34,24 @@ export class PlayScene extends Phaser.Scene {
   }
 
   create(): void {
-    const sceneConfig = this.sceneLoader.load('studio')
-    this.flags = { ...(sceneConfig.flagsInitial ?? {}) }
+    this.loadScene(this.currentSceneId)
+  }
+
+  private loadScene(sceneId: string): void {
+    const sceneConfig = this.sceneLoader.load(sceneId)
+    this.currentSceneId = sceneId
+
+    this.isDialogueOpen = false
+    this.activeDialog = undefined
+    this.hotspotVisuals = []
+    this.children.removeAll(true)
+
+    const initialFlags = sceneConfig.flagsInitial ?? {}
+    Object.entries(initialFlags).forEach(([flag, value]) => {
+      if (this.flags[flag] === undefined) {
+        this.flags[flag] = value
+      }
+    })
 
     this.drawBackground(sceneConfig.title ?? sceneConfig.id)
     sceneConfig.hotspots.forEach((hotspot) => {
@@ -140,39 +157,40 @@ export class PlayScene extends Phaser.Scene {
     }
 
     for (const action of actions) {
-      await this.runAction(action)
-      if (this.isEnding) {
+      const shouldBreak = await this.runAction(action)
+      if (this.isEnding || shouldBreak) {
         return
       }
     }
   }
 
-  private async runAction(action: Action): Promise<void> {
+  private async runAction(action: Action): Promise<boolean> {
     switch (action.type) {
       case 'showText':
         await this.showDialogue(action.text)
-        return
+        return false
       case 'addItem':
         this.addItem({
           itemId: action.itemId,
           name: action.name ?? action.itemId,
           description: action.description,
         })
-        return
+        return false
       case 'removeItem':
         this.removeItem(action.itemId)
-        return
+        return false
       case 'setFlag':
         this.flags[action.flag] = action.value
         this.refreshHotspots()
-        return
+        return false
       case 'end':
         this.showEnding(action.text)
-        return
+        return true
       case 'gotoScene':
-        return
+        this.loadScene(action.sceneId)
+        return true
       default:
-        return
+        return false
     }
   }
 
