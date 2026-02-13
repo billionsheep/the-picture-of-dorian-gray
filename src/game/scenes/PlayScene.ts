@@ -1,10 +1,13 @@
 import Phaser from 'phaser'
 import { SceneLoader } from '../core/SceneLoader'
 import type { Action, FlagValue, HotspotConfig } from '../core/schema'
+import { TEXT_ASSETS } from '../../content/textAssets'
 
 const GAME_WIDTH = 960
 const GAME_HEIGHT = 540
 const INVENTORY_BAR_HEIGHT = 108
+const OBJECTIVE_TOP = 18
+const OBJECTIVE_RIGHT = 18
 
 interface InventoryItem {
   itemId: string
@@ -19,11 +22,17 @@ interface HotspotVisual {
 
 export class PlayScene extends Phaser.Scene {
   private sceneLoader = new SceneLoader()
-  private currentSceneId = 'studio'
+  private currentSceneId = 'title'
   private hotspotVisuals: HotspotVisual[] = []
   private activeDialog?: Phaser.GameObjects.Container
   private isDialogueOpen = false
   private isEnding = false
+  private isSettingsOpen = false
+  private objectiveText?: Phaser.GameObjects.Text
+  private settingsButton?: Phaser.GameObjects.Container
+  private settingsMenu?: Phaser.GameObjects.Container
+  private hasBgmResource = false
+  private musicEnabled = true
   private flags: Record<string, FlagValue> = {}
   private inventory: InventoryItem[] = []
   private selectedItemId?: string
@@ -34,6 +43,7 @@ export class PlayScene extends Phaser.Scene {
   }
 
   create(): void {
+    this.hasBgmResource = this.cache.audio.exists('bgm_main')
     this.loadScene(this.currentSceneId)
   }
 
@@ -42,7 +52,11 @@ export class PlayScene extends Phaser.Scene {
     this.currentSceneId = sceneId
 
     this.isDialogueOpen = false
+    this.isSettingsOpen = false
     this.activeDialog = undefined
+    this.settingsMenu = undefined
+    this.settingsButton = undefined
+    this.objectiveText = undefined
     this.hotspotVisuals = []
     this.children.removeAll(true)
 
@@ -54,12 +68,14 @@ export class PlayScene extends Phaser.Scene {
     })
 
     this.drawBackground(sceneConfig.title ?? sceneConfig.id)
+    this.drawTopUi()
     sceneConfig.hotspots.forEach((hotspot) => {
       this.hotspotVisuals.push(this.drawHotspot(hotspot))
     })
 
     this.renderInventory()
     this.refreshHotspots()
+    this.refreshObjective()
     void this.runActions(sceneConfig.startActions)
   }
 
@@ -72,6 +88,234 @@ export class PlayScene extends Phaser.Scene {
         fontSize: '24px',
       })
       .setDepth(2)
+  }
+
+  private drawTopUi(): void {
+    const objectiveLabel = this.add
+      .text(GAME_WIDTH - OBJECTIVE_RIGHT, OBJECTIVE_TOP, 'Objective', {
+        color: '#d6c2a1',
+        fontFamily: 'Georgia, serif',
+        fontSize: '18px',
+      })
+      .setOrigin(1, 0)
+      .setDepth(52)
+
+    this.objectiveText = this.add
+      .text(GAME_WIDTH - OBJECTIVE_RIGHT, OBJECTIVE_TOP + 22, '', {
+        color: '#f4f0e6',
+        fontFamily: 'Georgia, serif',
+        fontSize: '16px',
+        align: 'right',
+        wordWrap: { width: 320 },
+      })
+      .setOrigin(1, 0)
+      .setDepth(52)
+
+    const buttonBg = this.add
+      .rectangle(GAME_WIDTH - 102, 82, 160, 34, 0x2a2a2a, 0.95)
+      .setStrokeStyle(1, 0xcdb58f)
+      .setDepth(52)
+      .setInteractive({ useHandCursor: true })
+
+    const buttonText = this.add
+      .text(GAME_WIDTH - 102, 82, 'Settings', {
+        color: '#f4f0e6',
+        fontFamily: 'Georgia, serif',
+        fontSize: '16px',
+      })
+      .setOrigin(0.5)
+      .setDepth(53)
+
+    this.settingsButton = this.add.container(0, 0, [buttonBg, buttonText]).setDepth(52)
+    this.settingsButton.setData('bg', buttonBg)
+
+    buttonBg.on('pointerdown', () => {
+      if (this.isDialogueOpen || this.isEnding) {
+        return
+      }
+
+      if (this.isSettingsOpen) {
+        this.closeSettingsMenu()
+      } else {
+        this.openSettingsMenu()
+      }
+    })
+
+    objectiveLabel.setData('ui', true)
+    this.objectiveText.setData('ui', true)
+    this.settingsButton.setData('ui', true)
+  }
+
+  private refreshObjective(): void {
+    if (!this.objectiveText) {
+      return
+    }
+
+    const objective = this.getObjective(this.currentSceneId, this.flags, this.inventory)
+    this.objectiveText.setText(objective)
+  }
+
+  private getObjective(sceneId: string, flags: Record<string, FlagValue>, inventory: InventoryItem[]): string {
+    const has = (itemId: string) => inventory.some((entry) => entry.itemId === itemId)
+    const isTrue = (flag: string) => flags[flag] === true
+
+    if (sceneId === 'title') {
+      return TEXT_ASSETS.objective.title
+    }
+
+    if (sceneId === 'prologue') {
+      return TEXT_ASSETS.objective.prologue
+    }
+
+    if (sceneId === 'studio') {
+      if (!has('code_1230') && isTrue('letter_first_active')) {
+        return TEXT_ASSETS.objective.studioFindCode
+      }
+
+      if (isTrue('drawer_locked_active')) {
+        return TEXT_ASSETS.objective.studioOpenDrawer
+      }
+
+      if (!isTrue('curtain_lifted')) {
+        return TEXT_ASSETS.objective.studioUseHook
+      }
+
+      return TEXT_ASSETS.objective.studioGoTheatre
+    }
+
+    if (sceneId === 'dressingRoom') {
+      if (!isTrue('attic_key')) {
+        return TEXT_ASSETS.objective.dressingGetAtticKey
+      }
+
+      if (!has('yellow_page') && isTrue('trunk_locked_active')) {
+        return TEXT_ASSETS.objective.dressingUseHook
+      }
+
+      return TEXT_ASSETS.objective.dressingGoAttic
+    }
+
+    if (sceneId === 'attic') {
+      if (!has('knife')) {
+        return TEXT_ASSETS.objective.atticGetKnife
+      }
+
+      return TEXT_ASSETS.objective.atticUseKnife
+    }
+
+    return ''
+  }
+
+  private openSettingsMenu(): void {
+    if (this.settingsMenu) {
+      return
+    }
+
+    this.isSettingsOpen = true
+
+    const overlay = this.add
+      .rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.45)
+      .setOrigin(0)
+      .setDepth(90)
+
+    const panel = this.add
+      .rectangle(GAME_WIDTH - 190, 188, 300, 240, 0x1c1c1c, 0.96)
+      .setOrigin(0.5)
+      .setStrokeStyle(2, 0xcdb58f)
+      .setDepth(91)
+
+    const title = this.add
+      .text(GAME_WIDTH - 300, 88, 'Settings', {
+        color: '#f4f0e6',
+        fontFamily: 'Georgia, serif',
+        fontSize: '20px',
+      })
+      .setDepth(92)
+
+    const storyButton = this.createMenuButton(GAME_WIDTH - 190, 132, 'Story / Background', () => {
+      this.closeSettingsMenu()
+      void this.showDialogue(TEXT_ASSETS.system.storyBackground)
+    })
+
+    const musicButton = this.createMenuButton(
+      GAME_WIDTH - 190,
+      178,
+      this.musicEnabled ? 'Music: On' : 'Music: Off',
+      () => {
+        const message = this.toggleMusic()
+        this.closeSettingsMenu()
+        if (message) {
+          void this.showDialogue(message)
+        }
+      },
+    )
+
+    const restartButton = this.createMenuButton(GAME_WIDTH - 190, 224, 'Restart', () => {
+      this.restartGame()
+    })
+
+    const backButton = this.createMenuButton(GAME_WIDTH - 190, 270, 'Back', () => {
+      this.closeSettingsMenu()
+    })
+
+    this.settingsMenu = this.add
+      .container(0, 0, [overlay, panel, title, ...storyButton, ...musicButton, ...restartButton, ...backButton])
+      .setDepth(90)
+  }
+
+  private createMenuButton(x: number, y: number, label: string, onClick: () => void): Phaser.GameObjects.GameObject[] {
+    const bg = this.add
+      .rectangle(x, y, 232, 34, 0x2f2f2f, 0.96)
+      .setStrokeStyle(1, 0xb69e7a)
+      .setDepth(92)
+      .setInteractive({ useHandCursor: true })
+
+    const text = this.add
+      .text(x, y, label, {
+        color: '#f4f0e6',
+        fontFamily: 'Georgia, serif',
+        fontSize: '16px',
+      })
+      .setOrigin(0.5)
+      .setDepth(93)
+
+    bg.on('pointerdown', onClick)
+
+    return [bg, text]
+  }
+
+  private closeSettingsMenu(): void {
+    this.settingsMenu?.destroy(true)
+    this.settingsMenu = undefined
+    this.isSettingsOpen = false
+  }
+
+  private toggleMusic(): string | undefined {
+    this.musicEnabled = !this.musicEnabled
+    this.sound.mute = !this.musicEnabled
+
+    if (!this.hasBgmResource) {
+      // TODO: add and preload a real looping BGM asset under key 'bgm_main'.
+      return TEXT_ASSETS.system.musicMissing
+    }
+
+    return undefined
+  }
+
+  private resetProgress(): void {
+    this.closeSettingsMenu()
+    this.activeDialog?.destroy(true)
+    this.activeDialog = undefined
+    this.isDialogueOpen = false
+    this.isEnding = false
+    this.flags = {}
+    this.inventory = []
+    this.selectedItemId = undefined
+  }
+
+  private restartGame(): void {
+    this.resetProgress()
+    this.loadScene('title')
   }
 
   private drawHotspot(hotspot: HotspotConfig): HotspotVisual {
@@ -100,7 +344,7 @@ export class PlayScene extends Phaser.Scene {
   }
 
   private isInputBlocked(): boolean {
-    return this.isDialogueOpen || this.isEnding
+    return this.isDialogueOpen || this.isEnding || this.isSettingsOpen
   }
 
   private async handleHotspotClick(hotspot: HotspotConfig): Promise<void> {
@@ -182,6 +426,7 @@ export class PlayScene extends Phaser.Scene {
       case 'setFlag':
         this.flags[action.flag] = action.value
         this.refreshHotspots()
+        this.refreshObjective()
         return false
       case 'end':
         this.showEnding(action.text)
@@ -202,6 +447,7 @@ export class PlayScene extends Phaser.Scene {
 
     this.inventory.push(item)
     this.renderInventory()
+    this.refreshObjective()
   }
 
   private removeItem(itemId: string): void {
@@ -210,6 +456,7 @@ export class PlayScene extends Phaser.Scene {
       this.selectedItemId = undefined
     }
     this.renderInventory()
+    this.refreshObjective()
   }
 
   private toggleSelectItem(itemId: string): void {
@@ -314,6 +561,7 @@ export class PlayScene extends Phaser.Scene {
   }
 
   private showEnding(text: string): void {
+    this.closeSettingsMenu()
     this.isEnding = true
 
     const overlay = this.add.rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.82).setOrigin(0).setDepth(140)
@@ -332,13 +580,53 @@ export class PlayScene extends Phaser.Scene {
       .setDepth(142)
 
     const footer = this.add
-      .text(GAME_WIDTH / 2 - 320, GAME_HEIGHT / 2 + 104, 'MVP 完成：输入已锁定', {
+      .text(GAME_WIDTH / 2 - 320, GAME_HEIGHT / 2 + 104, '结局已达成', {
         color: '#baa58a',
         fontFamily: 'Georgia, serif',
         fontSize: '20px',
       })
       .setDepth(142)
 
-    this.add.container(0, 0, [overlay, panel, content, footer]).setDepth(140)
+    const restartButton = this.add
+      .rectangle(GAME_WIDTH / 2 - 130, GAME_HEIGHT / 2 + 148, 220, 42, 0x3a3a3a, 0.98)
+      .setStrokeStyle(1, 0xcdb58f)
+      .setDepth(142)
+      .setInteractive({ useHandCursor: true })
+
+    const restartLabel = this.add
+      .text(GAME_WIDTH / 2 - 130, GAME_HEIGHT / 2 + 148, 'Restart', {
+        color: '#f4f0e6',
+        fontFamily: 'Georgia, serif',
+        fontSize: '18px',
+      })
+      .setOrigin(0.5)
+      .setDepth(143)
+
+    const titleButton = this.add
+      .rectangle(GAME_WIDTH / 2 + 130, GAME_HEIGHT / 2 + 148, 220, 42, 0x3a3a3a, 0.98)
+      .setStrokeStyle(1, 0xcdb58f)
+      .setDepth(142)
+      .setInteractive({ useHandCursor: true })
+
+    const titleLabel = this.add
+      .text(GAME_WIDTH / 2 + 130, GAME_HEIGHT / 2 + 148, 'Back to Title', {
+        color: '#f4f0e6',
+        fontFamily: 'Georgia, serif',
+        fontSize: '18px',
+      })
+      .setOrigin(0.5)
+      .setDepth(143)
+
+    restartButton.on('pointerdown', () => {
+      this.restartGame()
+    })
+
+    titleButton.on('pointerdown', () => {
+      this.restartGame()
+    })
+
+    this.add
+      .container(0, 0, [overlay, panel, content, footer, restartButton, restartLabel, titleButton, titleLabel])
+      .setDepth(140)
   }
 }

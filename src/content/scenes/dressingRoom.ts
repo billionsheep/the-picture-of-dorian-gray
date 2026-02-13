@@ -48,13 +48,17 @@ export const dressingRoomScene: SceneConfig = {
         accepts: ['code_1230'],
         success: [
           { type: 'showText', text: TEXT_ASSETS.dressingRoom.lockboxUseCodeSuccess },
+          { type: 'showText', text: TEXT_ASSETS.dressingRoom.lockboxUseCodeSuccessGuide },
           { type: 'addItem', itemId: 'attic_key', name: '阁楼钥匙' },
           { type: 'setFlag', flag: 'attic_key', value: true },
           { type: 'setFlag', flag: 'lockbox_locked_active', value: false },
           { type: 'setFlag', flag: 'lockbox_opened_active', value: true },
           { type: 'setFlag', flag: 'dressing_exit_locked_active', value: false },
         ],
-        fail: [{ type: 'showText', text: TEXT_ASSETS.dressingRoom.lockboxUseCodeFail }],
+        fail: [
+          { type: 'showText', text: TEXT_ASSETS.dressingRoom.lockboxUseCodeFail },
+          { type: 'showText', text: TEXT_ASSETS.dressingRoom.lockboxUseCodeFailGuide },
+        ],
       },
     },
     {
@@ -74,11 +78,15 @@ export const dressingRoomScene: SceneConfig = {
         accepts: ['hook'],
         success: [
           { type: 'showText', text: TEXT_ASSETS.dressingRoom.trunkUseHookSuccess },
+          { type: 'showText', text: TEXT_ASSETS.dressingRoom.trunkUseHookSuccessGuide },
           { type: 'addItem', itemId: 'yellow_page', name: '黄色书页' },
           { type: 'setFlag', flag: 'trunk_locked_active', value: false },
           { type: 'setFlag', flag: 'trunk_opened_active', value: true },
         ],
-        fail: [{ type: 'showText', text: TEXT_ASSETS.dressingRoom.trunkUseHookFail }],
+        fail: [
+          { type: 'showText', text: TEXT_ASSETS.dressingRoom.trunkUseHookFail },
+          { type: 'showText', text: TEXT_ASSETS.dressingRoom.trunkUseHookFailGuide },
+        ],
       },
     },
     {

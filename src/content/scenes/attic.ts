@@ -23,11 +23,15 @@ export const atticScene: SceneConfig = {
         accepts: ['attic_key'],
         success: [
           { type: 'showText', text: TEXT_ASSETS.attic.trunkUseKeySuccess },
+          { type: 'showText', text: TEXT_ASSETS.attic.trunkUseKeySuccessGuide },
           { type: 'addItem', itemId: 'knife', name: '调色刀' },
           { type: 'setFlag', flag: 'attic_trunk_locked_active', value: false },
           { type: 'setFlag', flag: 'attic_trunk_opened_active', value: true },
         ],
-        fail: [{ type: 'showText', text: TEXT_ASSETS.attic.trunkUseKeyFail }],
+        fail: [
+          { type: 'showText', text: TEXT_ASSETS.attic.trunkUseKeyFail },
+          { type: 'showText', text: TEXT_ASSETS.attic.trunkUseKeyFailGuide },
+        ],
       },
     },
     {
@@ -53,7 +57,10 @@ export const atticScene: SceneConfig = {
       onUse: {
         accepts: ['knife'],
         success: [{ type: 'end', text: TEXT_ASSETS.attic.knifeEnding }],
-        fail: [{ type: 'showText', text: TEXT_ASSETS.attic.portraitKnifeFail }],
+        fail: [
+          { type: 'showText', text: TEXT_ASSETS.attic.portraitKnifeFail },
+          { type: 'showText', text: TEXT_ASSETS.attic.portraitKnifeFailGuide },
+        ],
       },
     },
     {

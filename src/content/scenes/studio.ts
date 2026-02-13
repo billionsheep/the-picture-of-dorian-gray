@@ -67,6 +67,7 @@ export const studioScene: SceneConfig = {
         accepts: ['code_1230'],
         success: [
           { type: 'showText', text: TEXT_ASSETS.studio.drawerUnlocked },
+          { type: 'showText', text: TEXT_ASSETS.studio.drawerUnlockedGuide },
           { type: 'addItem', itemId: 'hook', name: '挂钩' },
           { type: 'addItem', itemId: 'theatre_ticket', name: '后台通行票' },
           { type: 'setFlag', flag: 'has_ticket', value: true },
@@ -74,7 +75,10 @@ export const studioScene: SceneConfig = {
           { type: 'setFlag', flag: 'drawer_locked_active', value: false },
           { type: 'setFlag', flag: 'drawer_opened_active', value: true },
         ],
-        fail: [{ type: 'showText', text: TEXT_ASSETS.studio.drawerUseFail }],
+        fail: [
+          { type: 'showText', text: TEXT_ASSETS.studio.drawerUseFail },
+          { type: 'showText', text: TEXT_ASSETS.studio.drawerUseFailGuide },
+        ],
       },
     },
     {
@@ -86,7 +90,10 @@ export const studioScene: SceneConfig = {
       onUse: {
         accepts: ['hook'],
         success: [{ type: 'showText', text: TEXT_ASSETS.studio.drawerOpenedUseHook }],
-        fail: [{ type: 'showText', text: TEXT_ASSETS.studio.drawerOpenedUseOtherFail }],
+        fail: [
+          { type: 'showText', text: TEXT_ASSETS.studio.drawerOpenedUseOtherFail },
+          { type: 'showText', text: TEXT_ASSETS.studio.drawerOpenedUseOtherGuide },
+        ],
       },
     },
     {
@@ -98,13 +105,17 @@ export const studioScene: SceneConfig = {
         accepts: ['hook'],
         success: [
           { type: 'showText', text: TEXT_ASSETS.studio.curtainUseHookSuccess },
+          { type: 'showText', text: TEXT_ASSETS.studio.curtainUseHookSuccessGuide },
           { type: 'setFlag', flag: 'curtain_lifted', value: true },
           { type: 'setFlag', flag: 'portrait_locked_active', value: false },
           { type: 'setFlag', flag: 'portrait_seen_active', value: true },
           { type: 'setFlag', flag: 'exit_locked_active', value: false },
           { type: 'setFlag', flag: 'exit_ready_active', value: true },
         ],
-        fail: [{ type: 'showText', text: TEXT_ASSETS.studio.curtainUseHookFail }],
+        fail: [
+          { type: 'showText', text: TEXT_ASSETS.studio.curtainUseHookFail },
+          { type: 'showText', text: TEXT_ASSETS.studio.curtainUseHookFailGuide },
+        ],
       },
     },
     {
