@@ -88,10 +88,14 @@ export const TEXT_ASSETS = {
     trunkUseHookFailGuide: 'The seam wants a hook.\nNothing else fits.',
     trunkOpened: 'Only folds of costume cloth.\nLike skin after the curtain falls.',
 
-    ashtrayHint: 'A yellowed page is trapped in the seam.\nMy fingers cannot reach it.',
-    ashtrayUsePageFail: 'I pry at the gap.\nThe paper hides deeper.',
-    ashtrayUsePageSuccess: 'The hook catches paper.\nIt smells like damp ash.',
-    ashtrayAfterBurned: 'Only folds of costume cloth.\nLike skin after the curtain falls.',
+    ashtrayHint:
+      'Fresh ash in the tray.\nNot cigarette ash. Paper.\nSomeone is waiting for me to turn a certain page into nothing.',
+    ashtrayUsePageFail:
+      'The fire is waiting for "paper".\nThat yellowed thing —\nit is wedged in the costume trunk seam, as if begging for help.',
+    ashtrayUsePageSuccess:
+      'The flame licks the ink.\nSybil\'s name blackens first — erased.\nThe smoke stings, but that is good.\nAs long as nobody has read this page — she never died.\nAnd I am innocent.',
+    ashtrayAfterBurned:
+      'Ash crouches at the bottom of the tray.\nLike a mouth that shut itself.\nYou thought it would never speak again.',
 
     exitLocked: 'No handle on the attic door.\nA keyhole waiting for a real key.',
     exitToAttic: 'Key in lock - a small sound like bone.\nThe stairs rise like a throat.',
@@ -106,8 +110,10 @@ export const TEXT_ASSETS = {
     trunkOpened: 'Only cold timber now.\nThe knife is already with you.',
 
     portraitPressure: 'The portrait looks back.\nAs if it wants me to confess first.',
-    portraitPressureUnburned: 'The portrait looks back.\nAs if it wants me to confess first.',
-    portraitPressureBurned: 'The portrait looks back.\nAs if it wants me to confess first.',
+    portraitPressureUnburned:
+      'The portrait looks back.\nThe page in my pocket is getting hot.\nAs if reminding me: I have not finished telling my own story.',
+    portraitPressureBurned:
+      'The portrait looks back.\nI smell ash.\nAsh followed me upstairs.\nLike a pair of hands I cannot wipe clean.',
     portraitKnifePrompt: 'The tip hovers over canvas.\nOne step closer - and there is no way back.',
     portraitKnifeFail: 'My hand shakes.\nI need a blade that can actually end it.',
     portraitKnifeFailGuide: 'The iron chest.\nThe knife.\nChoose it - then come back.',
@@ -116,9 +122,9 @@ export const TEXT_ASSETS = {
     knifeEnding:
       'Steel enters cloth.\nThe whole house inhales at once.\n\nFor a heartbeat I hear my own pulse -\nlike footsteps belonging to a stranger.\n\nSomewhere, a young face keeps smiling.\nAnd the painting finally gets what it was owed.',
     endingConfession:
-      'Steel enters cloth.\nThe whole house inhales at once.\n\nFor a heartbeat I hear my own pulse -\nlike footsteps belonging to a stranger.\n\nSomewhere, a young face keeps smiling.\nAnd the painting finally gets what it was owed.',
+      '(White flash. Like a mirror shattering.)\n\nThe blade sinks into canvas.\nI hear a sigh — mine, or its?\n\nPain arrives at last. Clean. Precise.\nLike a verdict years overdue.\n\nThey break down the door.\nOn the wall the portrait is flawless — still young, still smiling.\nOn the floor lies a withered old man, a knife in his chest.\nHis fingers are shrivelled, yet they clutch a ring.\n\nOnly by that ring do they recognise who he was.',
     endingHypocrisy:
-      'Steel enters cloth.\nThe whole house inhales at once.\n\nFor a heartbeat I hear my own pulse -\nlike footsteps belonging to a stranger.\n\nSomewhere, a young face keeps smiling.\nAnd the painting finally gets what it was owed.',
+      '(No white flash. Only black. Like ink poured into my eyes.)\n\nThe evidence is burned.\nNothing can judge me.\nI just need to destroy this painting —\nand I can be forever…\n\nForever… forever…\n\nWhy are you smiling?\nStop smiling. Not with my face.\n\n(The words begin to break apart.)\n\nI am not guilty I am not guilty I am not —\n\nLater they found a body.\nEven in death, the old face still wore greed and terror.\nHe died believing he had fooled the world.\n\nBut the portrait on the wall knew:\nno one ever truly escapes.',
   },
 } as const
 

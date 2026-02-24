@@ -9,7 +9,6 @@ export const atticScene: SceneConfig = {
     attic_trunk_locked_active: true,
     attic_trunk_opened_active: false,
 
-    portrait_hotspot_active: true,
     portrait_knife_active: true,
   },
   hotspots: [
@@ -43,11 +42,22 @@ export const atticScene: SceneConfig = {
       onClick: [{ type: 'showText', text: TEXT_ASSETS.attic.trunkOpened }],
     },
     {
-      id: 'attic_portrait',
+      id: 'attic_portrait_unburned',
       label: 'Portrait',
       rect: { x: 610, y: 120, w: 250, h: 300 },
-      requireFlag: 'portrait_hotspot_active',
-      onClick: [{ type: 'showText', text: TEXT_ASSETS.attic.portraitPressure }],
+      requireFlag: 'page_unburned',
+      onClick: [
+        { type: 'showText', text: TEXT_ASSETS.attic.portraitPressureUnburned },
+      ],
+    },
+    {
+      id: 'attic_portrait_burned',
+      label: 'Portrait',
+      rect: { x: 610, y: 120, w: 250, h: 300 },
+      requireFlag: 'page_burned',
+      onClick: [
+        { type: 'showText', text: TEXT_ASSETS.attic.portraitPressureBurned },
+      ],
     },
     {
       id: 'attic_portrait_knife_unburned',
