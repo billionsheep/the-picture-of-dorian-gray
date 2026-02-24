@@ -34,18 +34,24 @@ export const TEXT_ASSETS = {
     letterRepeat: 'The ink has dried.\nBut time still drips. 12:30.',
 
     drawerLocked: 'Locked.\nLike a smile that learned manners.',
-    drawerUseFail: 'Nothing turns.\nThe keyhole does not recognize my impatience.',
-    drawerUseFailGuide: 'The letter left a time behind my teeth.\nTwelve. Thirty.',
+    drawerUseFail:
+      'The keyhole is cold as a tooth.\nI do not need a key.',
+    drawerUseFailGuide:
+      'What I need is that moment.\nThe letter spelled it out once.',
     drawerUnlocked: 'Click.\nSomething has been waiting in the dark for a long time.',
     drawerUnlockedGuide: 'A hook. A backstage pass.\nThe curtain is next.',
     drawerRepeatOpen: 'The drawer gapes.\nOnly the smell of wood remains.',
     drawerOpenedUseHook: 'The hook sits well in my hand.\nIt does not belong in this mouth.',
-    drawerOpenedUseOtherFail: 'An empty drawer will not answer twice.',
-    drawerOpenedUseOtherGuide: 'Something else is still covered.\nThe curtain.',
+    drawerOpenedUseOtherFail:
+      'The empty drawer will not yield answers again.',
+    drawerOpenedUseOtherGuide:
+      'Something else in this room is still hiding.\nIt fears my gaze more than the lock ever did.',
 
     curtainLocked: "Don't.\nNot yet.\nI am not ready to see what sees me.",
-    curtainUseHookFail: 'The cloth will not move.\nMy fingers are too clean for this.',
-    curtainUseHookFailGuide: 'The hook.\nLet the metal do the dirty work.',
+    curtainUseHookFail:
+      'The cloth does not stir.\nMy hands are too clean for this.',
+    curtainUseHookFailGuide:
+      'Let the metal from the drawer do the dirty work.',
     curtainUseHookSuccess: 'Metal bites fabric.\nInch by inch, an old secret learns light.',
     curtainUseHookSuccessGuide: 'The portrait is exposed.\nThe pass in my palm can open the next door.',
     portraitLocked: 'I stare at the drape.\nIt stares back.',
@@ -114,7 +120,8 @@ export const TEXT_ASSETS = {
       'The portrait looks back.\nThe page in my pocket is getting hot.\nAs if reminding me: I have not finished telling my own story.',
     portraitPressureBurned:
       'The portrait looks back.\nI smell ash.\nAsh followed me upstairs.\nLike a pair of hands I cannot wipe clean.',
-    portraitKnifePrompt: 'The tip hovers over canvas.\nOne step closer - and there is no way back.',
+    portraitKnifePrompt:
+      'The tip of the blade stops before the canvas.\nOne step closer — no turning back.\nYou will hear —\nyourself, begging.',
     portraitKnifeFail: 'My hand shakes.\nI need a blade that can actually end it.',
     portraitKnifeFailGuide: 'The iron chest.\nThe knife.\nChoose it - then come back.',
 

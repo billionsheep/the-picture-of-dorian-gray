@@ -3,6 +3,7 @@ import type { SceneConfig } from '../../game/core/schema'
 export const titleScene: SceneConfig = {
   id: 'title',
   title: 'The Picture of Dorian Gray',
+  background: 'backgrounds/title.png',
   hotspots: [
     {
       id: 'title_start',

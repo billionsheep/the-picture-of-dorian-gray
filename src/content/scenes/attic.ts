@@ -4,6 +4,7 @@ import { TEXT_ASSETS } from '../textAssets'
 export const atticScene: SceneConfig = {
   id: 'attic',
   title: 'Locked Attic',
+  background: 'backgrounds/attic.png',
   startActions: [{ type: 'showText', text: TEXT_ASSETS.attic.intro }],
   flagsInitial: {
     attic_trunk_locked_active: true,

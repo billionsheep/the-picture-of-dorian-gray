@@ -4,6 +4,7 @@ import { TEXT_ASSETS } from '../textAssets'
 export const dressingRoomScene: SceneConfig = {
   id: 'dressingRoom',
   title: 'Theatre Dressing Room',
+  background: 'backgrounds/dressingRoom.png',
   startActions: [{ type: 'showText', text: TEXT_ASSETS.dressingRoom.intro }],
   flagsInitial: {
     attic_key: false,

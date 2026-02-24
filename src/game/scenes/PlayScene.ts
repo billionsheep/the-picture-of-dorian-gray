@@ -1,7 +1,12 @@
 import Phaser from 'phaser'
 import { SceneLoader } from '../core/SceneLoader'
-import type { Action, FlagValue, HotspotConfig } from '../core/schema'
+import type { Action, FlagValue, HotspotConfig, SceneConfig } from '../core/schema'
 import { TEXT_ASSETS } from '../../content/textAssets'
+import { titleScene } from '../../content/scenes/title'
+import { prologueScene } from '../../content/scenes/prologue'
+import { studioScene } from '../../content/scenes/studio'
+import { dressingRoomScene } from '../../content/scenes/dressingRoom'
+import { atticScene } from '../../content/scenes/attic'
 
 const GAME_WIDTH = 960
 const GAME_HEIGHT = 540
@@ -45,8 +50,29 @@ export class PlayScene extends Phaser.Scene {
   private selectedItemId?: string
   private inventoryUi: Phaser.GameObjects.GameObject[] = []
 
+  // 所有场景注册表（用于 preload 扫描背景图）
+  private readonly allScenes: SceneConfig[] = [
+    titleScene,
+    prologueScene,
+    studioScene,
+    dressingRoomScene,
+    atticScene,
+  ]
+
   constructor() {
     super('PlayScene')
+  }
+
+  preload(): void {
+    // 扫描全部场景配置，预加载所有带 background 字段的背景图
+    this.allScenes.forEach((scene) => {
+      if (scene.background) {
+        // key 用场景 id，避免重复加载
+        if (!this.textures.exists(scene.id)) {
+          this.load.image(scene.id, scene.background)
+        }
+      }
+    })
   }
 
   create(): void {
@@ -98,7 +124,7 @@ export class PlayScene extends Phaser.Scene {
       }
     })
 
-    this.drawBackground(sceneConfig.title ?? sceneConfig.id)
+    this.drawBackground(sceneConfig)
     this.drawTopUi()
 
     sceneConfig.hotspots.forEach((hotspot) => {
@@ -130,17 +156,20 @@ export class PlayScene extends Phaser.Scene {
     this.worldContainer.setScale(scale)
   }
 
-  private drawBackground(title: string): void {
-    const background = this.add.rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 0x111111).setOrigin(0)
-    const sceneTitle = this.add
-      .text(24, 24, `Scene: ${title}`, {
-        color: '#f5f5f5',
-        fontFamily: 'Georgia, serif',
-        fontSize: '24px',
-      })
-      .setDepth(2)
-
-    this.worldContainer?.add([background, sceneTitle])
+  private drawBackground(sceneConfig: SceneConfig): void {
+    if (sceneConfig.background && this.textures.exists(sceneConfig.id)) {
+      // 有背景图：用图片铺满整个 960×540 世界坐标
+      const bgImage = this.add
+        .image(0, 0, sceneConfig.id)
+        .setOrigin(0)
+        .setDisplaySize(GAME_WIDTH, GAME_HEIGHT)
+        .setDepth(0)
+      this.worldContainer?.add(bgImage)
+    } else {
+      // 无背景图：保留暗色矩形兜底
+      const background = this.add.rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 0x111111).setOrigin(0)
+      this.worldContainer?.add(background)
+    }
   }
 
   private drawTopUi(): void {
@@ -746,10 +775,10 @@ export class PlayScene extends Phaser.Scene {
         height / 2 + panelHeight / 2 - 34,
         layout.pages.length > 1 ? `Click to continue (${pageIndex + 1}/${layout.pages.length})` : 'Click anywhere to close',
         {
-        color: '#baa58a',
-        fontFamily: 'Georgia, serif',
-        fontSize: '20px',
-      },
+          color: '#baa58a',
+          fontFamily: 'Georgia, serif',
+          fontSize: '20px',
+        },
       )
       .setOrigin(0, 0)
       .setDepth(102)

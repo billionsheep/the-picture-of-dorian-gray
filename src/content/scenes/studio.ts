@@ -4,6 +4,7 @@ import { TEXT_ASSETS } from '../textAssets'
 export const studioScene: SceneConfig = {
   id: 'studio',
   title: 'Basil Studio',
+  background: 'backgrounds/studio.png',
   startActions: [{ type: 'showText', text: TEXT_ASSETS.studio.intro }],
   flagsInitial: {
     drawer_open: false,

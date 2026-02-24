@@ -4,6 +4,7 @@ import { TEXT_ASSETS } from '../textAssets'
 export const prologueScene: SceneConfig = {
   id: 'prologue',
   title: 'Prologue',
+  background: 'backgrounds/prologue.png',
   startActions: [
     { type: 'showText', text: TEXT_ASSETS.prologue.part1 },
     { type: 'showText', text: TEXT_ASSETS.prologue.part2 },
