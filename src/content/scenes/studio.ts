@@ -42,7 +42,7 @@ export const studioScene: SceneConfig = {
     {
       id: 'letter_first',
       label: 'Letter',
-      rect: { x: 84, y: 350, w: 180, h: 120 },
+      rect: { x: 290, y: 356, w: 188, h: 73 },
       requireFlag: 'letter_first_active',
       onClick: [
         { type: 'showText', text: TEXT_ASSETS.studio.letterFirst },
@@ -54,14 +54,14 @@ export const studioScene: SceneConfig = {
     {
       id: 'letter_repeat',
       label: 'Letter',
-      rect: { x: 84, y: 350, w: 180, h: 120 },
+      rect: { x: 290, y: 356, w: 188, h: 73 },
       requireFlag: 'letter_repeat_active',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.studio.letterRepeat }],
     },
     {
       id: 'drawer_locked',
       label: 'Drawer',
-      rect: { x: 374, y: 328, w: 210, h: 150 },
+      rect: { x: 309, y: 264, w: 316, h: 58 },
       requireFlag: 'drawer_locked_active',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.studio.drawerLocked }],
       onUse: {
@@ -85,7 +85,7 @@ export const studioScene: SceneConfig = {
     {
       id: 'drawer_opened',
       label: 'Drawer',
-      rect: { x: 374, y: 328, w: 210, h: 150 },
+      rect: { x: 309, y: 264, w: 316, h: 58 },
       requireFlag: 'drawer_opened_active',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.studio.drawerRepeatOpen }],
       onUse: {
@@ -100,7 +100,7 @@ export const studioScene: SceneConfig = {
     {
       id: 'curtain_locked',
       label: 'Curtain',
-      rect: { x: 640, y: 100, w: 250, h: 340 },
+      rect: { x: 708, y: 149, w: 181, h: 243 },
       onClick: [{ type: 'showText', text: TEXT_ASSETS.studio.curtainLocked }],
       onUse: {
         accepts: ['hook'],
@@ -122,28 +122,28 @@ export const studioScene: SceneConfig = {
     {
       id: 'portrait_locked',
       label: 'Portrait',
-      rect: { x: 656, y: 120, w: 220, h: 300 },
+      rect: { x: 766, y: 156, w: 176, h: 236 },
       requireFlag: 'portrait_locked_active',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.studio.portraitLocked }],
     },
     {
       id: 'portrait_seen',
       label: 'Portrait',
-      rect: { x: 656, y: 120, w: 220, h: 300 },
+      rect: { x: 766, y: 156, w: 176, h: 236 },
       requireFlag: 'portrait_seen_active',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.studio.portraitSeen }],
     },
     {
       id: 'exit_locked',
       label: 'Exit',
-      rect: { x: 18, y: 210, w: 70, h: 170 },
+      rect: { x: 19, y: 92, w: 124, h: 384 },
       requireFlag: 'exit_locked_active',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.studio.exitLocked }],
     },
     {
       id: 'exit_to_theatre',
       label: 'Exit',
-      rect: { x: 18, y: 210, w: 70, h: 170 },
+      rect: { x: 19, y: 92, w: 124, h: 384 },
       requireFlag: 'exit_ready_active',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.studio.exitLocked }],
       onUse: {
@@ -159,7 +159,7 @@ export const studioScene: SceneConfig = {
     {
       id: 'mirror_first',
       label: 'Mirror',
-      rect: { x: 40, y: 120, w: 180, h: 200 },
+      rect: { x: 221, y: 166, w: 46, h: 54 },
       requireFlag: 'mirror_first_active',
       onClick: [
         { type: 'showText', text: TEXT_ASSETS.studio.mirrorFirst },
@@ -170,14 +170,14 @@ export const studioScene: SceneConfig = {
     {
       id: 'mirror_repeat',
       label: 'Mirror',
-      rect: { x: 40, y: 120, w: 180, h: 200 },
+      rect: { x: 221, y: 166, w: 46, h: 54 },
       requireFlag: 'mirror_repeat_active',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.studio.mirrorRepeat }],
     },
     {
       id: 'clock_first',
       label: 'Clock',
-      rect: { x: 430, y: 80, w: 100, h: 100 },
+      rect: { x: 448, y: 113, w: 64, h: 43 },
       requireFlag: 'clock_first_active',
       onClick: [
         { type: 'showText', text: TEXT_ASSETS.studio.clockFirst },
@@ -188,14 +188,14 @@ export const studioScene: SceneConfig = {
     {
       id: 'clock_repeat',
       label: 'Clock',
-      rect: { x: 430, y: 80, w: 100, h: 100 },
+      rect: { x: 448, y: 113, w: 64, h: 43 },
       requireFlag: 'clock_repeat_active',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.studio.clockRepeat }],
     },
     {
       id: 'paintbox_first',
       label: 'Paintbox',
-      rect: { x: 250, y: 360, w: 110, h: 90 },
+      rect: { x: 517, y: 365, w: 143, h: 34 },
       requireFlag: 'paintbox_first_active',
       onClick: [
         { type: 'showText', text: TEXT_ASSETS.studio.paintboxFirst },
@@ -206,14 +206,14 @@ export const studioScene: SceneConfig = {
     {
       id: 'paintbox_repeat',
       label: 'Paintbox',
-      rect: { x: 250, y: 360, w: 110, h: 90 },
+      rect: { x: 517, y: 365, w: 143, h: 34 },
       requireFlag: 'paintbox_repeat_active',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.studio.paintboxRepeat }],
     },
     {
       id: 'ring_first',
       label: 'Ring',
-      rect: { x: 540, y: 420, w: 110, h: 70 },
+      rect: { x: 534, y: 414, w: 20, h: 6 },
       requireFlag: 'ring_first_active',
       onClick: [
         { type: 'showText', text: TEXT_ASSETS.studio.ringFirst },
@@ -224,14 +224,14 @@ export const studioScene: SceneConfig = {
     {
       id: 'ring_repeat',
       label: 'Ring',
-      rect: { x: 540, y: 420, w: 110, h: 70 },
+      rect: { x: 534, y: 414, w: 20, h: 6 },
       requireFlag: 'ring_repeat_active',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.studio.ringRepeat }],
     },
     {
       id: 'window_first',
       label: 'Window',
-      rect: { x: 770, y: 30, w: 150, h: 100 },
+      rect: { x: 772, y: 42, w: 116, h: 70 },
       requireFlag: 'window_first_active',
       onClick: [
         { type: 'showText', text: TEXT_ASSETS.studio.windowFirst },
@@ -242,7 +242,7 @@ export const studioScene: SceneConfig = {
     {
       id: 'window_repeat',
       label: 'Window',
-      rect: { x: 770, y: 30, w: 150, h: 100 },
+      rect: { x: 772, y: 42, w: 116, h: 70 },
       requireFlag: 'window_repeat_active',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.studio.windowRepeat }],
     },

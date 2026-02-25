@@ -22,6 +22,7 @@ interface InventoryItem {
 interface HotspotVisual {
   hotspot: HotspotConfig
   area: Phaser.GameObjects.Rectangle
+  labelText?: Phaser.GameObjects.Text
 }
 
 interface TextLayoutResult {
@@ -49,6 +50,8 @@ export class PlayScene extends Phaser.Scene {
   private inventory: InventoryItem[] = []
   private selectedItemId?: string
   private inventoryUi: Phaser.GameObjects.GameObject[] = []
+  // 开发者调试模式：按 D 键切换，显示鼠标在游戏世界坐标中的实时位置
+  private debugMode = false
 
   // 所有场景注册表（用于 preload 扫描背景图）
   private readonly allScenes: SceneConfig[] = [
@@ -81,6 +84,49 @@ export class PlayScene extends Phaser.Scene {
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.scale.off('resize', this.handleResize, this)
     })
+
+    // 开发者调试坐标叠加层（纯 HTML DOM，不受 Phaser 场景生命周期影响）
+    let debugDiv = document.getElementById('debug-overlay') as HTMLDivElement | null
+    if (!debugDiv) {
+      debugDiv = document.createElement('div')
+      debugDiv.id = 'debug-overlay'
+      debugDiv.style.cssText =
+        'position:fixed;top:0;left:0;pointer-events:none;z-index:9999;' +
+        'color:#00ff00;font:bold 16px monospace;background:rgba(0,0,0,0.8);' +
+        'padding:6px 12px;border-radius:4px;display:none;'
+      document.body.appendChild(debugDiv)
+
+      // 按 D 键切换调试模式
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'd' || e.key === 'D') {
+          this.debugMode = !this.debugMode
+          debugDiv!.style.display = this.debugMode ? 'block' : 'none'
+        }
+      })
+
+      // 鼠标移动时更新调试坐标（转换为 960×540 游戏世界坐标）
+      const canvas = this.game.canvas
+      canvas.addEventListener('mousemove', (e) => {
+        if (!this.debugMode || !this.worldContainer) return
+        const rect = canvas.getBoundingClientRect()
+        const canvasX = e.clientX - rect.left
+        const canvasY = e.clientY - rect.top
+        const scaleRatioX = canvas.width / rect.width
+        const scaleRatioY = canvas.height / rect.height
+        const phaserX = canvasX * scaleRatioX
+        const phaserY = canvasY * scaleRatioY
+        const worldX = Math.round(
+          (phaserX - this.worldContainer.x) / this.worldContainer.scaleX
+        )
+        const worldY = Math.round(
+          (phaserY - this.worldContainer.y) / this.worldContainer.scaleY
+        )
+        debugDiv!.textContent = `Game XY: (${worldX}, ${worldY})`
+        debugDiv!.style.left = `${e.clientX + 20}px`
+        debugDiv!.style.top = `${e.clientY - 10}px`
+      })
+    }
+
     this.loadScene(this.currentSceneId)
   }
 
@@ -174,7 +220,7 @@ export class PlayScene extends Phaser.Scene {
 
   private drawTopUi(): void {
     this.objectiveLabelText = this.add
-      .text(0, 0, 'Objective', {
+      .text(0, 0, '...', {
         color: '#d6c2a1',
         fontFamily: 'Georgia, serif',
         fontSize: '18px',
@@ -440,10 +486,11 @@ export class PlayScene extends Phaser.Scene {
   private drawHotspot(hotspot: HotspotConfig): HotspotVisual {
     const { x, y, w, h } = hotspot.rect
 
+    // 临时调试模式：所有热区可见，方便校准坐标
     const area = this.add
-      .rectangle(x, y, w, h, 0x5f6f7d, 0.55)
+      .rectangle(x, y, w, h, 0x5f6f7d, 0.35)
       .setOrigin(0)
-      .setStrokeStyle(2, 0xe9d8a6)
+      .setStrokeStyle(1.5, 0xe9d8a6, 0.8)
       .setDepth(10)
 
     const label = hotspot.label ?? hotspot.id
@@ -451,7 +498,7 @@ export class PlayScene extends Phaser.Scene {
       .text(x + 8, y + 8, label, {
         color: '#ffffff',
         fontFamily: 'Georgia, serif',
-        fontSize: '20px',
+        fontSize: '18px',
       })
       .setDepth(11)
 
@@ -461,7 +508,7 @@ export class PlayScene extends Phaser.Scene {
 
     this.worldContainer?.add([area, labelText])
 
-    return { hotspot, area }
+    return { hotspot, area, labelText }
   }
 
   private isInputBlocked(): boolean {
@@ -502,7 +549,6 @@ export class PlayScene extends Phaser.Scene {
   private refreshHotspots(): void {
     this.hotspotVisuals.forEach((entry) => {
       const enabled = this.isHotspotAvailable(entry.hotspot)
-      entry.area.setAlpha(enabled ? 0.55 : 0.18)
 
       if (enabled && !entry.area.input?.enabled) {
         entry.area.setInteractive({ useHandCursor: true })
@@ -510,6 +556,9 @@ export class PlayScene extends Phaser.Scene {
 
       if (!enabled && entry.area.input?.enabled) {
         entry.area.disableInteractive()
+        // 禁用时确保边框和标签隐藏
+        entry.area.setStrokeStyle(0, 0x000000, 0)
+        entry.labelText?.setAlpha(0)
       }
     })
   }

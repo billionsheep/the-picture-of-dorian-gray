@@ -25,6 +25,8 @@ export interface HotspotConfig {
   id: string
   rect: RectConfig
   label?: string
+  /** 'button' 渲染为可见的 UI 按钮，默认为不可见热区 */
+  style?: 'button'
   requireFlag?: string
   onClick?: Action[]
   onUse?: UseRule

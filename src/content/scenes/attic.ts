@@ -16,7 +16,7 @@ export const atticScene: SceneConfig = {
     {
       id: 'attic_trunk_locked',
       label: 'Trunk',
-      rect: { x: 120, y: 300, w: 240, h: 150 },
+      rect: { x: 140, y: 275, w: 300, h: 135 },
       requireFlag: 'attic_trunk_locked_active',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.attic.trunkHint }],
       onUse: {
@@ -38,14 +38,14 @@ export const atticScene: SceneConfig = {
     {
       id: 'attic_trunk_opened',
       label: 'Trunk',
-      rect: { x: 120, y: 300, w: 240, h: 150 },
+      rect: { x: 140, y: 275, w: 300, h: 135 },
       requireFlag: 'attic_trunk_opened_active',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.attic.trunkOpened }],
     },
     {
       id: 'attic_portrait_unburned',
       label: 'Portrait',
-      rect: { x: 610, y: 120, w: 250, h: 300 },
+      rect: { x: 560, y: 80, w: 320, h: 400 },
       requireFlag: 'page_unburned',
       onClick: [
         { type: 'showText', text: TEXT_ASSETS.attic.portraitPressureUnburned },
@@ -54,7 +54,7 @@ export const atticScene: SceneConfig = {
     {
       id: 'attic_portrait_burned',
       label: 'Portrait',
-      rect: { x: 610, y: 120, w: 250, h: 300 },
+      rect: { x: 560, y: 80, w: 320, h: 400 },
       requireFlag: 'page_burned',
       onClick: [
         { type: 'showText', text: TEXT_ASSETS.attic.portraitPressureBurned },
@@ -63,7 +63,7 @@ export const atticScene: SceneConfig = {
     {
       id: 'attic_portrait_knife_unburned',
       label: 'Portrait Knife',
-      rect: { x: 610, y: 430, w: 250, h: 70 },
+      rect: { x: 560, y: 380, w: 320, h: 100 },
       requireFlag: 'page_unburned',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.attic.portraitKnifePrompt }],
       onUse: {
@@ -78,7 +78,7 @@ export const atticScene: SceneConfig = {
     {
       id: 'attic_portrait_knife_burned',
       label: 'Portrait Knife',
-      rect: { x: 610, y: 430, w: 250, h: 70 },
+      rect: { x: 560, y: 380, w: 320, h: 100 },
       requireFlag: 'page_burned',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.attic.portraitKnifePrompt }],
       onUse: {
@@ -93,7 +93,7 @@ export const atticScene: SceneConfig = {
     {
       id: 'attic_exit_leave',
       label: 'Exit Leave',
-      rect: { x: 18, y: 210, w: 70, h: 170 },
+      rect: { x: 0, y: 90, w: 80, h: 295 },
       onClick: [{ type: 'end', text: TEXT_ASSETS.attic.leaveEnding }],
     },
   ],

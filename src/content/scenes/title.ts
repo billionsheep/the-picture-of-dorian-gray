@@ -8,6 +8,7 @@ export const titleScene: SceneConfig = {
     {
       id: 'title_start',
       label: 'Start',
+      style: 'button',
       rect: { x: 300, y: 200, w: 360, h: 90 },
       onClick: [{ type: 'gotoScene', sceneId: 'prologue' }],
     },
