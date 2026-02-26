@@ -14,7 +14,7 @@ export const atticScene: SceneConfig = {
     {
       id: 'attic_trunk_locked',
       label: 'Trunk',
-      rect: { x: 140, y: 275, w: 300, h: 135 },
+      rect: { x: 306, y: 345, w: 254, h: 83 },
       requireFlag: 'attic_trunk_locked_active',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.attic.trunkHint }],
       onUse: {
@@ -36,14 +36,14 @@ export const atticScene: SceneConfig = {
     {
       id: 'attic_trunk_opened',
       label: 'Trunk',
-      rect: { x: 140, y: 275, w: 300, h: 135 },
+      rect: { x: 306, y: 345, w: 254, h: 83 },
       requireFlag: 'attic_trunk_opened_active',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.attic.trunkOpened }],
     },
     {
       id: 'attic_portrait_unburned',
       label: 'Portrait',
-      rect: { x: 560, y: 80, w: 320, h: 400 },
+      rect: { x: 650, y: 230, w: 216, h: 224 },
       requireFlag: 'page_unburned',
       onClick: [
         { type: 'showText', text: TEXT_ASSETS.attic.portraitPressureUnburned },
@@ -64,7 +64,7 @@ export const atticScene: SceneConfig = {
     {
       id: 'attic_portrait_burned',
       label: 'Portrait',
-      rect: { x: 560, y: 80, w: 320, h: 400 },
+      rect: { x: 650, y: 230, w: 216, h: 224 },
       requireFlag: 'page_burned',
       onClick: [
         { type: 'showText', text: TEXT_ASSETS.attic.portraitPressureBurned },
@@ -85,7 +85,7 @@ export const atticScene: SceneConfig = {
     {
       id: 'attic_exit_leave',
       label: 'Exit Leave',
-      rect: { x: 0, y: 90, w: 80, h: 295 },
+      rect: { x: 63, y: 169, w: 158, h: 270 },
       onClick: [{ type: 'end', text: TEXT_ASSETS.attic.leaveEnding }],
     },
   ],

@@ -908,15 +908,15 @@ export class PlayScene extends Phaser.Scene {
     this.isEnding = true
     const { width, height } = this.getViewportSize()
     const panelWidth = 820
-    const panelHeight = 440
+    const panelHeight = 520
     const panelInnerWidth = panelWidth - 88
-    const panelInnerHeight = panelHeight - 190
+    const panelInnerHeight = panelHeight - 140
     const layout = this.buildTextLayoutPages(text, panelInnerWidth, panelInnerHeight, 30, 18)
     let pageIndex = 0
 
-    const overlay = this.add.rectangle(0, 0, width, height, 0x000000, 0.5).setOrigin(0).setDepth(140)
+    const overlay = this.add.rectangle(0, 0, width, height, 0x000000, 0.45).setOrigin(0).setDepth(140)
     const panel = this.add
-      .rectangle(width / 2, height / 2, panelWidth, panelHeight, 0x161616, 0.95)
+      .rectangle(width / 2, height / 2, panelWidth, panelHeight, 0x161616, 0.85)
       .setStrokeStyle(2, 0xd6c2a1)
       .setDepth(141)
 
@@ -931,7 +931,7 @@ export class PlayScene extends Phaser.Scene {
       .setDepth(142)
 
     const footer = this.add
-      .text(width / 2 - panelWidth / 2 + 44, height / 2 + panelHeight / 2 - 132, 'Ending reached', {
+      .text(width / 2 - panelWidth / 2 + 44, height / 2 + panelHeight / 2 - 80, 'Ending reached', {
         color: '#baa58a',
         fontFamily: 'Georgia, serif',
         fontSize: '20px',
@@ -940,53 +940,29 @@ export class PlayScene extends Phaser.Scene {
       .setDepth(142)
 
     const pageHint = this.add
-      .text(width / 2 - panelWidth / 2 + 44, height / 2 + panelHeight / 2 - 104, '', {
+      .text(width / 2 + panelWidth / 2 - 44, height / 2 + panelHeight / 2 - 80, '', {
         color: '#baa58a',
         fontFamily: 'Georgia, serif',
         fontSize: '18px',
       })
-      .setOrigin(0, 0)
+      .setOrigin(1, 0)
       .setDepth(142)
 
+    // 只保留一个 Restart 按钮，居中显示
     const restartButton = this.add
-      .rectangle(width / 2 - 130, height / 2 + panelHeight / 2 - 46, 220, 42, 0x3a3a3a, 0.98)
+      .rectangle(width / 2, height / 2 + panelHeight / 2 - 38, 260, 42, 0x3a3a3a, 0.98)
       .setStrokeStyle(1, 0xcdb58f)
       .setDepth(142)
       .setInteractive({ useHandCursor: true })
 
     const restartLabel = this.add
-      .text(width / 2 - 130, height / 2 + panelHeight / 2 - 46, 'Restart', {
+      .text(width / 2, height / 2 + panelHeight / 2 - 38, 'Restart', {
         color: '#f4f0e6',
         fontFamily: 'Georgia, serif',
         fontSize: '18px',
       })
       .setOrigin(0.5)
       .setDepth(143)
-
-    const titleButton = this.add
-      .rectangle(width / 2 + 130, height / 2 + panelHeight / 2 - 46, 220, 42, 0x3a3a3a, 0.98)
-      .setStrokeStyle(1, 0xcdb58f)
-      .setDepth(142)
-      .setInteractive({ useHandCursor: true })
-
-    const titleLabel = this.add
-      .text(width / 2 + 130, height / 2 + panelHeight / 2 - 46, 'Back to Title', {
-        color: '#f4f0e6',
-        fontFamily: 'Georgia, serif',
-        fontSize: '18px',
-      })
-      .setOrigin(0.5)
-      .setDepth(143)
-
-    const setTitleButtonVisible = (visible: boolean) => {
-      titleButton.setVisible(visible)
-      titleLabel.setVisible(visible)
-      if (visible) {
-        titleButton.setInteractive({ useHandCursor: true })
-      } else {
-        titleButton.disableInteractive()
-      }
-    }
 
     const updatePageState = () => {
       content.setText(layout.pages[pageIndex])
@@ -994,12 +970,10 @@ export class PlayScene extends Phaser.Scene {
 
       if (!isLast) {
         restartLabel.setText('Next')
-        pageHint.setText(`Page ${pageIndex + 1}/${layout.pages.length}`)
-        setTitleButtonVisible(false)
+        pageHint.setText(`${pageIndex + 1} / ${layout.pages.length}`)
       } else {
         restartLabel.setText('Restart')
-        pageHint.setText(layout.pages.length > 1 ? `Page ${layout.pages.length}/${layout.pages.length}` : '')
-        setTitleButtonVisible(true)
+        pageHint.setText(layout.pages.length > 1 ? `${layout.pages.length} / ${layout.pages.length}` : '')
       }
     }
 
@@ -1015,13 +989,8 @@ export class PlayScene extends Phaser.Scene {
       this.restartGame()
     })
 
-    titleButton.on('pointerdown', () => {
-      this.resetProgress()
-      this.loadScene('title')
-    })
-
     this.add
-      .container(0, 0, [overlay, panel, content, footer, pageHint, restartButton, restartLabel, titleButton, titleLabel])
+      .container(0, 0, [overlay, panel, content, footer, pageHint, restartButton, restartLabel])
       .setDepth(140)
   }
 }
