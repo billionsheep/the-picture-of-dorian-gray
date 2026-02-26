@@ -27,7 +27,7 @@ export const dressingRoomScene: SceneConfig = {
     {
       id: 'playbill_first',
       label: 'Playbill',
-      rect: { x: 145, y: 25, w: 165, h: 185 },
+      rect: { x: 248, y: 38, w: 193, h: 146 },
       requireFlag: 'playbill_first_active',
       onClick: [
         { type: 'showText', text: TEXT_ASSETS.dressingRoom.playbillFirst },
@@ -38,14 +38,14 @@ export const dressingRoomScene: SceneConfig = {
     {
       id: 'playbill_repeat',
       label: 'Playbill',
-      rect: { x: 145, y: 25, w: 165, h: 185 },
+      rect: { x: 248, y: 38, w: 193, h: 146 },
       requireFlag: 'playbill_repeat_active',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.dressingRoom.playbillRepeat }],
     },
     {
       id: 'ashtray_unburned',
       label: 'Ashtray',
-      rect: { x: 490, y: 200, w: 70, h: 70 },
+      rect: { x: 572, y: 263, w: 99, h: 31 },
       requireFlag: 'page_unburned',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.dressingRoom.ashtrayHint }],
       onUse: {
@@ -63,14 +63,14 @@ export const dressingRoomScene: SceneConfig = {
     {
       id: 'ashtray_burned',
       label: 'Ashtray',
-      rect: { x: 490, y: 200, w: 70, h: 70 },
+      rect: { x: 572, y: 263, w: 99, h: 31 },
       requireFlag: 'ashtray_burned',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.dressingRoom.ashtrayAfterBurned }],
     },
     {
       id: 'lockbox_locked',
       label: 'Lockbox',
-      rect: { x: 265, y: 210, w: 225, h: 185 },
+      rect: { x: 232, y: 271, w: 248, h: 86 },
       requireFlag: 'lockbox_locked_active',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.dressingRoom.lockboxHint }],
       onUse: {
@@ -94,14 +94,14 @@ export const dressingRoomScene: SceneConfig = {
     {
       id: 'lockbox_opened',
       label: 'Lockbox',
-      rect: { x: 265, y: 210, w: 225, h: 185 },
+      rect: { x: 232, y: 271, w: 248, h: 86 },
       requireFlag: 'lockbox_opened_active',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.dressingRoom.lockboxOpened }],
     },
     {
       id: 'costume_trunk_locked',
       label: 'Costume Trunk',
-      rect: { x: 580, y: 365, w: 350, h: 145 },
+      rect: { x: 653, y: 382, w: 307, h: 139 },
       requireFlag: 'trunk_locked_active',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.dressingRoom.trunkHint }],
       onUse: {
@@ -122,21 +122,21 @@ export const dressingRoomScene: SceneConfig = {
     {
       id: 'costume_trunk_opened',
       label: 'Costume Trunk',
-      rect: { x: 580, y: 365, w: 350, h: 145 },
+      rect: { x: 653, y: 382, w: 307, h: 139 },
       requireFlag: 'trunk_opened_active',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.dressingRoom.trunkOpened }],
     },
     {
       id: 'dressing_exit_locked',
       label: 'Exit',
-      rect: { x: 0, y: 0, w: 95, h: 430 },
+      rect: { x: 0, y: 0, w: 115, h: 452 },
       requireFlag: 'dressing_exit_locked_active',
       onClick: [{ type: 'showText', text: TEXT_ASSETS.dressingRoom.exitLocked }],
     },
     {
       id: 'dressing_exit_attic',
       label: 'Exit',
-      rect: { x: 0, y: 0, w: 95, h: 430 },
+      rect: { x: 0, y: 0, w: 115, h: 452 },
       requireFlag: 'attic_key',
       onClick: [
         { type: 'showText', text: TEXT_ASSETS.dressingRoom.exitToAttic },

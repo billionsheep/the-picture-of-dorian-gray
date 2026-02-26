@@ -9,8 +9,6 @@ export const atticScene: SceneConfig = {
   flagsInitial: {
     attic_trunk_locked_active: true,
     attic_trunk_opened_active: false,
-
-    portrait_knife_active: true,
   },
   hotspots: [
     {
@@ -50,6 +48,18 @@ export const atticScene: SceneConfig = {
       onClick: [
         { type: 'showText', text: TEXT_ASSETS.attic.portraitPressureUnburned },
       ],
+      onUse: {
+        accepts: ['knife'],
+        success: [
+          { type: 'changeBackground', background: 'backgrounds/attic_slashed.png' },
+          { type: 'showText', text: TEXT_ASSETS.attic.knifeEnding },
+          { type: 'end', text: TEXT_ASSETS.attic.endingConfession },
+        ],
+        fail: [
+          { type: 'showText', text: TEXT_ASSETS.attic.portraitKnifeFail },
+          { type: 'showText', text: TEXT_ASSETS.attic.portraitKnifeFailGuide },
+        ],
+      },
     },
     {
       id: 'attic_portrait_burned',
@@ -59,31 +69,13 @@ export const atticScene: SceneConfig = {
       onClick: [
         { type: 'showText', text: TEXT_ASSETS.attic.portraitPressureBurned },
       ],
-    },
-    {
-      id: 'attic_portrait_knife_unburned',
-      label: 'Portrait Knife',
-      rect: { x: 560, y: 380, w: 320, h: 100 },
-      requireFlag: 'page_unburned',
-      onClick: [{ type: 'showText', text: TEXT_ASSETS.attic.portraitKnifePrompt }],
       onUse: {
         accepts: ['knife'],
-        success: [{ type: 'end', text: TEXT_ASSETS.attic.endingConfession }],
-        fail: [
-          { type: 'showText', text: TEXT_ASSETS.attic.portraitKnifeFail },
-          { type: 'showText', text: TEXT_ASSETS.attic.portraitKnifeFailGuide },
+        success: [
+          { type: 'changeBackground', background: 'backgrounds/attic_slashed.png' },
+          { type: 'showText', text: TEXT_ASSETS.attic.knifeEnding },
+          { type: 'end', text: TEXT_ASSETS.attic.endingHypocrisy },
         ],
-      },
-    },
-    {
-      id: 'attic_portrait_knife_burned',
-      label: 'Portrait Knife',
-      rect: { x: 560, y: 380, w: 320, h: 100 },
-      requireFlag: 'page_burned',
-      onClick: [{ type: 'showText', text: TEXT_ASSETS.attic.portraitKnifePrompt }],
-      onUse: {
-        accepts: ['knife'],
-        success: [{ type: 'end', text: TEXT_ASSETS.attic.endingHypocrisy }],
         fail: [
           { type: 'showText', text: TEXT_ASSETS.attic.portraitKnifeFail },
           { type: 'showText', text: TEXT_ASSETS.attic.portraitKnifeFailGuide },

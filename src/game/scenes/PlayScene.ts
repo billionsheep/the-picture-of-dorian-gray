@@ -155,9 +155,30 @@ export class PlayScene extends Phaser.Scene {
     this.settingsButton = undefined
     this.objectiveLabelText = undefined
     this.objectiveText = undefined
+
+    // 显式清理旧热区的 Input 注册和事件监听，防止泄漏到下一个场景
+    this.hotspotVisuals.forEach((entry) => {
+      entry.area.removeAllListeners()
+      if (entry.area.input) {
+        entry.area.disableInteractive()
+      }
+      entry.area.destroy()
+      entry.labelText?.destroy()
+    })
+    this.hotspotVisuals = []
+
+    // 清理 Inventory UI 的事件监听
+    this.inventoryUi.forEach((node) => {
+      if (node instanceof Phaser.GameObjects.Rectangle) {
+        node.removeAllListeners()
+        if (node.input) {
+          node.disableInteractive()
+        }
+      }
+    })
+
     this.worldContainer = undefined
     this.hudContainer = undefined
-    this.hotspotVisuals = []
     this.children.removeAll(true)
 
     this.worldContainer = this.add.container(0, 0)
@@ -599,6 +620,37 @@ export class PlayScene extends Phaser.Scene {
       case 'end':
         this.showEnding(action.text)
         return true
+      case 'changeBackground': {
+        // 动态切换场景背景图（必须等待加载完成后再继续后续 action）
+        const bgKey = `bg_dynamic_${action.background}`
+        const applyBg = () => {
+          const oldBg = this.worldContainer?.list.find(
+            (obj) => (obj as Phaser.GameObjects.Image).depth === 0
+          ) as Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle | undefined
+          if (oldBg) {
+            oldBg.destroy()
+          }
+          const newBg = this.add
+            .image(0, 0, bgKey)
+            .setOrigin(0)
+            .setDisplaySize(GAME_WIDTH, GAME_HEIGHT)
+            .setDepth(0)
+          this.worldContainer?.addAt(newBg, 0)
+        }
+        if (this.textures.exists(bgKey)) {
+          applyBg()
+        } else {
+          await new Promise<void>((resolve) => {
+            this.load.image(bgKey, action.background)
+            this.load.once('complete', () => {
+              applyBg()
+              resolve()
+            })
+            this.load.start()
+          })
+        }
+        return false
+      }
       case 'gotoScene':
         this.loadScene(action.sceneId)
         return true
@@ -862,7 +914,7 @@ export class PlayScene extends Phaser.Scene {
     const layout = this.buildTextLayoutPages(text, panelInnerWidth, panelInnerHeight, 30, 18)
     let pageIndex = 0
 
-    const overlay = this.add.rectangle(0, 0, width, height, 0x000000, 0.82).setOrigin(0).setDepth(140)
+    const overlay = this.add.rectangle(0, 0, width, height, 0x000000, 0.5).setOrigin(0).setDepth(140)
     const panel = this.add
       .rectangle(width / 2, height / 2, panelWidth, panelHeight, 0x161616, 0.95)
       .setStrokeStyle(2, 0xd6c2a1)
@@ -964,7 +1016,8 @@ export class PlayScene extends Phaser.Scene {
     })
 
     titleButton.on('pointerdown', () => {
-      this.restartGame()
+      this.resetProgress()
+      this.loadScene('title')
     })
 
     this.add

@@ -6,6 +6,7 @@ export type Action =
   | { type: 'removeItem'; itemId: string }
   | { type: 'setFlag'; flag: string; value: FlagValue }
   | { type: 'gotoScene'; sceneId: string }
+  | { type: 'changeBackground'; background: string }
   | { type: 'end'; text: string }
 
 export interface RectConfig {
