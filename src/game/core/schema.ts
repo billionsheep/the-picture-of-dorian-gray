@@ -37,6 +37,8 @@ export interface SceneConfig {
   id: string
   title?: string
   background?: string
+  /** 该场景的背景音乐文件路径（相对于 public 目录） */
+  bgm?: string
   hotspots: HotspotConfig[]
   startActions?: Action[]
   flagsInitial?: Record<string, FlagValue>

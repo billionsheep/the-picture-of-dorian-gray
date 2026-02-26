@@ -46,6 +46,8 @@ export class PlayScene extends Phaser.Scene {
   private settingsModalContainer?: Phaser.GameObjects.Container
   private hasBgmResource = false
   private musicEnabled = true
+  private currentBgm?: Phaser.Sound.BaseSound
+  private currentBgmKey = ''
   private flags: Record<string, FlagValue> = {}
   private inventory: InventoryItem[] = []
   private selectedItemId?: string
@@ -67,13 +69,21 @@ export class PlayScene extends Phaser.Scene {
   }
 
   preload(): void {
-    // 扫描全部场景配置，预加载所有带 background 字段的背景图
+    // 预加载所有场景背景图
     this.allScenes.forEach((scene) => {
       if (scene.background) {
-        // key 用场景 id，避免重复加载
         if (!this.textures.exists(scene.id)) {
           this.load.image(scene.id, scene.background)
         }
+      }
+    })
+
+    // 预加载所有场景 BGM（去重：相同路径只加载一次）
+    const loadedAudio = new Set<string>()
+    this.allScenes.forEach((scene) => {
+      if (scene.bgm && !loadedAudio.has(scene.bgm)) {
+        this.load.audio(scene.bgm, scene.bgm)
+        loadedAudio.add(scene.bgm)
       }
     })
   }
@@ -203,7 +213,40 @@ export class PlayScene extends Phaser.Scene {
     this.refreshObjective()
     this.layoutWorldAndHud()
     this.layoutTopUi()
+
+    // BGM 切换：相同曲目则继续播放，不同则切换
+    this.switchBgm(sceneConfig.bgm)
+
     void this.runActions(sceneConfig.startActions)
+  }
+
+  /** 切换背景音乐，相同曲目不中断 */
+  private switchBgm(bgmKey?: string): void {
+    // 无 BGM 配置 → 停止当前音乐
+    if (!bgmKey) {
+      this.currentBgm?.destroy()
+      this.currentBgm = undefined
+      this.currentBgmKey = ''
+      return
+    }
+
+    // 与当前相同 → 不中断
+    if (bgmKey === this.currentBgmKey && this.currentBgm) {
+      return
+    }
+
+    // 停止旧 BGM
+    this.currentBgm?.destroy()
+
+    // 播放新 BGM
+    if (this.cache.audio.exists(bgmKey) && this.musicEnabled) {
+      this.currentBgm = this.sound.add(bgmKey, {
+        loop: true,
+        volume: 0.4,
+      })
+      this.currentBgm.play()
+      this.currentBgmKey = bgmKey
+    }
   }
 
   private layoutWorldAndHud(): void {
@@ -506,22 +549,25 @@ export class PlayScene extends Phaser.Scene {
 
   private drawHotspot(hotspot: HotspotConfig): HotspotVisual {
     const { x, y, w, h } = hotspot.rect
+    const isButton = hotspot.style === 'button'
 
-    // 临时调试模式：所有热区可见，方便校准坐标
+    // Button 样式显示半透明背板和边框，普通热区完全透明不可见（仅保留手型光标交互）
     const area = this.add
-      .rectangle(x, y, w, h, 0x5f6f7d, 0.35)
+      .rectangle(x, y, w, h, isButton ? 0x3a3a3a : 0x000000, isButton ? 0.45 : 0)
       .setOrigin(0)
-      .setStrokeStyle(1.5, 0xe9d8a6, 0.8)
+      .setStrokeStyle(isButton ? 1 : 0, isButton ? 0xe9d8a6 : 0x000000, isButton ? 0.8 : 0)
       .setDepth(10)
 
     const label = hotspot.label ?? hotspot.id
     const labelText = this.add
-      .text(x + 8, y + 8, label, {
-        color: '#ffffff',
+      .text(x + w / 2, y + h / 2, label, {
+        color: '#e9d8a6',
         fontFamily: 'Georgia, serif',
-        fontSize: '18px',
+        fontSize: isButton ? '20px' : '14px',
       })
+      .setOrigin(0.5)
       .setDepth(11)
+      .setAlpha(isButton ? 1 : 0) // 普通热区文字标签也永远为透明
 
     area.on('pointerdown', () => {
       void this.handleHotspotClick(hotspot)
@@ -570,9 +616,14 @@ export class PlayScene extends Phaser.Scene {
   private refreshHotspots(): void {
     this.hotspotVisuals.forEach((entry) => {
       const enabled = this.isHotspotAvailable(entry.hotspot)
+      const isButton = entry.hotspot.style === 'button'
 
       if (enabled && !entry.area.input?.enabled) {
         entry.area.setInteractive({ useHandCursor: true })
+        if (isButton) {
+          entry.area.setStrokeStyle(1, 0xe9d8a6, 0.8)
+          entry.labelText?.setAlpha(1)
+        }
       }
 
       if (!enabled && entry.area.input?.enabled) {

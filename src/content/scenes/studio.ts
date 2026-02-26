@@ -5,6 +5,7 @@ export const studioScene: SceneConfig = {
   id: 'studio',
   title: 'Basil Studio',
   background: 'backgrounds/studio.png',
+  bgm: 'audio/backgroundmusic.ogg',
   startActions: [{ type: 'showText', text: TEXT_ASSETS.studio.intro }],
   flagsInitial: {
     drawer_open: false,

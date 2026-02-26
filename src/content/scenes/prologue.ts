@@ -5,6 +5,7 @@ export const prologueScene: SceneConfig = {
   id: 'prologue',
   title: 'Prologue',
   background: 'backgrounds/prologue.png',
+  bgm: 'audio/prologuebgm.ogg',
   startActions: [
     { type: 'showText', text: TEXT_ASSETS.prologue.part1 },
     { type: 'showText', text: TEXT_ASSETS.prologue.part2 },

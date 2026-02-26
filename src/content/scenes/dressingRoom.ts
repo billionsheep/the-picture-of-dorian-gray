@@ -5,6 +5,7 @@ export const dressingRoomScene: SceneConfig = {
   id: 'dressingRoom',
   title: 'Theatre Dressing Room',
   background: 'backgrounds/dressingRoom.png',
+  bgm: 'audio/backgroundmusic.ogg',
   startActions: [{ type: 'showText', text: TEXT_ASSETS.dressingRoom.intro }],
   flagsInitial: {
     attic_key: false,
