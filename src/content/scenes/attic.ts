@@ -6,6 +6,7 @@ export const atticScene: SceneConfig = {
   title: 'Locked Attic',
   background: 'backgrounds/attic.png',
   bgm: 'audio/atticbgm.ogg',
+  bgmOffset: 20,
   startActions: [{ type: 'showText', text: TEXT_ASSETS.attic.intro }],
   flagsInitial: {
     attic_trunk_locked_active: true,

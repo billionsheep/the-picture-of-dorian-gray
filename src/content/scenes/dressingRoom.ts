@@ -6,6 +6,7 @@ export const dressingRoomScene: SceneConfig = {
   title: 'Theatre Dressing Room',
   background: 'backgrounds/dressingRoom.png',
   bgm: 'audio/backgroundmusic.ogg',
+  bgmOffset: 20,
   startActions: [{ type: 'showText', text: TEXT_ASSETS.dressingRoom.intro }],
   flagsInitial: {
     attic_key: false,

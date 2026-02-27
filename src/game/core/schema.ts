@@ -39,6 +39,8 @@ export interface SceneConfig {
   background?: string
   /** 该场景的背景音乐文件路径（相对于 public 目录） */
   bgm?: string
+  /** BGM 播放起始偏移秒数（跳过开头静音/前奏部分） */
+  bgmOffset?: number
   hotspots: HotspotConfig[]
   startActions?: Action[]
   flagsInitial?: Record<string, FlagValue>

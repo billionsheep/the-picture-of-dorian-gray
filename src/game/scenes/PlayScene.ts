@@ -44,7 +44,6 @@ export class PlayScene extends Phaser.Scene {
   private objectiveText?: Phaser.GameObjects.Text
   private settingsButton?: Phaser.GameObjects.Container
   private settingsModalContainer?: Phaser.GameObjects.Container
-  private hasBgmResource = false
   private musicEnabled = true
   private currentBgm?: Phaser.Sound.BaseSound
   private currentBgmKey = ''
@@ -89,7 +88,6 @@ export class PlayScene extends Phaser.Scene {
   }
 
   create(): void {
-    this.hasBgmResource = this.cache.audio.exists('bgm_main')
     this.scale.on('resize', this.handleResize, this)
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.scale.off('resize', this.handleResize, this)
@@ -215,13 +213,13 @@ export class PlayScene extends Phaser.Scene {
     this.layoutTopUi()
 
     // BGM 切换：相同曲目则继续播放，不同则切换
-    this.switchBgm(sceneConfig.bgm)
+    this.switchBgm(sceneConfig.bgm, sceneConfig.bgmOffset)
 
     void this.runActions(sceneConfig.startActions)
   }
 
   /** 切换背景音乐，相同曲目不中断 */
-  private switchBgm(bgmKey?: string): void {
+  private switchBgm(bgmKey?: string, offset = 0): void {
     // 无 BGM 配置 → 停止当前音乐
     if (!bgmKey) {
       this.currentBgm?.destroy()
@@ -238,13 +236,13 @@ export class PlayScene extends Phaser.Scene {
     // 停止旧 BGM
     this.currentBgm?.destroy()
 
-    // 播放新 BGM
+    // 播放新 BGM（从 offset 秒开始）
     if (this.cache.audio.exists(bgmKey) && this.musicEnabled) {
       this.currentBgm = this.sound.add(bgmKey, {
         loop: true,
         volume: 0.4,
       })
-      this.currentBgm.play()
+      this.currentBgm.play({ seek: offset })
       this.currentBgmKey = bgmKey
     }
   }
@@ -522,10 +520,20 @@ export class PlayScene extends Phaser.Scene {
 
   private toggleMusic(): string | undefined {
     this.musicEnabled = !this.musicEnabled
-    this.sound.mute = !this.musicEnabled
 
-    if (!this.hasBgmResource) {
-      return TEXT_ASSETS.system.musicMissing
+    if (!this.musicEnabled) {
+      // 关闭音乐：停止当前 BGM
+      if (this.currentBgm) {
+        this.currentBgm.destroy()
+        this.currentBgm = undefined
+        this.currentBgmKey = ''
+      }
+    } else {
+      // 开启音乐：恢复当前场景的 BGM
+      const sceneConfig = this.allScenes.find((s) => s.id === this.currentSceneId)
+      if (sceneConfig?.bgm) {
+        this.switchBgm(sceneConfig.bgm, sceneConfig.bgmOffset)
+      }
     }
 
     return undefined

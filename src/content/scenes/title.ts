@@ -5,6 +5,7 @@ export const titleScene: SceneConfig = {
   title: 'The Picture of Dorian Gray',
   background: 'backgrounds/title.png',
   bgm: 'audio/backgroundmusic.ogg',
+  bgmOffset: 20,
   hotspots: [
     {
       id: 'title_start',
