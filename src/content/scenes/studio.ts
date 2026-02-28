@@ -48,7 +48,7 @@ export const studioScene: SceneConfig = {
       requireFlag: 'letter_first_active',
       onClick: [
         { type: 'showText', text: TEXT_ASSETS.studio.letterFirst },
-        { type: 'addItem', itemId: 'code_1230', name: 'Time: 12:30' },
+        { type: 'addItem', itemId: 'code_1230', name: 'Time: 12:30', icon: 'items/code_1230.png' },
         { type: 'setFlag', flag: 'letter_first_active', value: false },
         { type: 'setFlag', flag: 'letter_repeat_active', value: true },
       ],
@@ -71,8 +71,8 @@ export const studioScene: SceneConfig = {
         success: [
           { type: 'showText', text: TEXT_ASSETS.studio.drawerUnlocked },
           { type: 'showText', text: TEXT_ASSETS.studio.drawerUnlockedGuide },
-          { type: 'addItem', itemId: 'hook', name: 'Hook' },
-          { type: 'addItem', itemId: 'theatre_ticket', name: 'Backstage Pass' },
+          { type: 'addItem', itemId: 'hook', name: 'Hook', icon: 'items/hook.png' },
+          { type: 'addItem', itemId: 'theatre_ticket', name: 'Backstage Pass', icon: 'items/theatre_ticket.png' },
           { type: 'setFlag', flag: 'has_ticket', value: true },
           { type: 'setFlag', flag: 'drawer_open', value: true },
           { type: 'setFlag', flag: 'drawer_locked_active', value: false },

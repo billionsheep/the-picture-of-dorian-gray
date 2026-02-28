@@ -11,12 +11,13 @@ import { atticScene } from '../../content/scenes/attic'
 const GAME_WIDTH = 960
 const GAME_HEIGHT = 540
 const TOP_HUD_HEIGHT = 90
-const BOTTOM_HUD_HEIGHT = 150
+const BOTTOM_HUD_HEIGHT = 120
 
 interface InventoryItem {
   itemId: string
   name: string
   description?: string
+  icon?: string
 }
 
 interface HotspotVisual {
@@ -84,6 +85,25 @@ export class PlayScene extends Phaser.Scene {
         this.load.audio(scene.bgm, scene.bgm)
         loadedAudio.add(scene.bgm)
       }
+    })
+
+    // 预加载所有道具图标
+    const loadedIcons = new Set<string>()
+    const scanActions = (actions?: Action[]) => {
+      actions?.forEach((a) => {
+        if (a.type === 'addItem' && a.icon && !loadedIcons.has(a.icon)) {
+          this.load.image(a.icon, a.icon)
+          loadedIcons.add(a.icon)
+        }
+      })
+    }
+    this.allScenes.forEach((scene) => {
+      scene.hotspots.forEach((h) => {
+        scanActions(h.onClick)
+        scanActions(h.onUse?.success)
+        scanActions(h.onUse?.fail)
+      })
+      scanActions(scene.startActions)
     })
   }
 
@@ -666,6 +686,7 @@ export class PlayScene extends Phaser.Scene {
           itemId: action.itemId,
           name: action.name ?? action.itemId,
           description: action.description,
+          icon: action.icon,
         })
         return false
       case 'removeItem':
@@ -676,6 +697,73 @@ export class PlayScene extends Phaser.Scene {
         this.refreshHotspots()
         this.refreshObjective()
         return false
+      case 'playVideo': {
+        // 播放前情提要视频，叠加在 Phaser canvas 上方
+        const canvas = this.game.canvas
+        const parent = canvas.parentElement
+        if (!parent) return false
+
+        await new Promise<void>((resolve) => {
+          // 创建全屏覆盖容器
+          const overlay = document.createElement('div')
+          overlay.style.cssText = `
+            position: absolute; inset: 0; z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+            background: #000;
+          `
+          parent.style.position = 'relative'
+          parent.appendChild(overlay)
+
+          // 创建 video 元素
+          const video = document.createElement('video')
+          video.src = action.src
+          video.autoplay = true
+          video.playsInline = true
+          video.style.cssText = 'width:100%; height:100%; object-fit:contain;'
+          overlay.appendChild(video)
+
+          // 清理函数（确保只执行一次）
+          let cleaned = false
+          const cleanup = () => {
+            if (cleaned) return
+            cleaned = true
+            video.pause()
+            video.removeAttribute('src')
+            video.load()
+            overlay.remove()
+            resolve()
+          }
+
+          // 视频结束后自动清理
+          video.addEventListener('ended', cleanup, { once: true })
+          // 加载失败时优雅降级（直接跳过）
+          video.addEventListener('error', cleanup, { once: true })
+
+          // 可跳过按钮
+          if (action.skippable !== false) {
+            const skipBtn = document.createElement('button')
+            skipBtn.textContent = 'Skip ▸'
+            skipBtn.style.cssText = `
+              position: absolute; bottom: 32px; right: 32px;
+              padding: 8px 24px; font-size: 16px;
+              background: rgba(255,255,255,0.15); color: #fff;
+              border: 1px solid rgba(255,255,255,0.3);
+              border-radius: 6px; cursor: pointer;
+              backdrop-filter: blur(4px);
+              transition: background 0.2s;
+            `
+            skipBtn.addEventListener('mouseenter', () => {
+              skipBtn.style.background = 'rgba(255,255,255,0.3)'
+            })
+            skipBtn.addEventListener('mouseleave', () => {
+              skipBtn.style.background = 'rgba(255,255,255,0.15)'
+            })
+            skipBtn.addEventListener('click', cleanup, { once: true })
+            overlay.appendChild(skipBtn)
+          }
+        })
+        return false
+      }
       case 'end':
         this.showEnding(action.text)
         return true
@@ -756,33 +844,64 @@ export class PlayScene extends Phaser.Scene {
       .setDepth(30)
 
     const title = this.add
-      .text(16, height - BOTTOM_HUD_HEIGHT + 12, 'Inventory', {
+      .text(16, height - BOTTOM_HUD_HEIGHT + 8, 'Inventory', {
         color: '#d9c7a8',
         fontFamily: 'Georgia, serif',
-        fontSize: '20px',
+        fontSize: '16px',
       })
       .setDepth(31)
 
     this.inventoryUi.push(bar, title)
 
+    const CARD_SIZE = 60
+    const CARD_GAP = 14
+    const ICON_SIZE = 40
+    const startX = 16
+    const cardY = height - BOTTOM_HUD_HEIGHT + 26
+
     this.inventory.forEach((item, index) => {
-      const x = 20 + index * 200
-      const y = height - 58
+      const x = startX + index * (CARD_SIZE + CARD_GAP)
       const isSelected = this.selectedItemId === item.itemId
 
+      // 卡片背景
       const card = this.add
-        .rectangle(x, y, 182, 44, isSelected ? 0x6c4f1d : 0x303030, 0.96)
+        .rectangle(x, cardY, CARD_SIZE, CARD_SIZE, isSelected ? 0x6c4f1d : 0x2a2a2a, 0.96)
         .setOrigin(0)
-        .setStrokeStyle(2, isSelected ? 0xe7bf7a : 0x636363)
+        .setStrokeStyle(2, isSelected ? 0xe7bf7a : 0x555555)
         .setDepth(31)
         .setInteractive({ useHandCursor: true })
 
+      this.inventoryUi.push(card)
+
+      // 图标或回退文字
+      if (item.icon && this.textures.exists(item.icon)) {
+        const icon = this.add
+          .image(x + CARD_SIZE / 2, cardY + CARD_SIZE / 2, item.icon)
+          .setDisplaySize(ICON_SIZE, ICON_SIZE)
+          .setOrigin(0.5)
+          .setDepth(32)
+        this.inventoryUi.push(icon)
+      } else {
+        // 无图标时显示首字母
+        const fallback = this.add
+          .text(x + CARD_SIZE / 2, cardY + CARD_SIZE / 2, item.name.charAt(0).toUpperCase(), {
+            color: '#d9c7a8',
+            fontFamily: 'Georgia, serif',
+            fontSize: '28px',
+          })
+          .setOrigin(0.5)
+          .setDepth(32)
+        this.inventoryUi.push(fallback)
+      }
+
+      // 道具名字
       const label = this.add
-        .text(x + 10, y + 10, item.name, {
-          color: '#f4f0e6',
+        .text(x + CARD_SIZE / 2, cardY + CARD_SIZE + 2, item.name, {
+          color: '#d9c7a8',
           fontFamily: 'Georgia, serif',
-          fontSize: '20px',
+          fontSize: '14px',
         })
+        .setOrigin(0.5, 0)
         .setDepth(32)
 
       card.on('pointerdown', () => {
@@ -792,7 +911,7 @@ export class PlayScene extends Phaser.Scene {
         this.toggleSelectItem(item.itemId)
       })
 
-      this.inventoryUi.push(card, label)
+      this.inventoryUi.push(label)
     })
 
     this.hudContainer?.add(this.inventoryUi)

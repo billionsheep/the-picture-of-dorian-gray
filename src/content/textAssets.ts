@@ -22,6 +22,11 @@ export const TEXT_ASSETS = {
       '[Settings - Placeholder]\nBackground: Adapted from The Picture of Dorian Gray. A portrait takes the rot so the face can stay young.\nControls: click hotspots to read; select an inventory item first, then click a target to use it.\nAI note: Parts of the prototype and text were drafted with AI assistance and then edited by a human.',
   },
   prologue: {
+    // 前置世界观说明（帮助不了解原著的玩家快速理解设定）
+    context1:
+      'Dorian Gray — a young man from over a century ago.\nA painter captured his beauty in a portrait.\nHe made a wish: let the painting bear all his aging and sin.\nThe wish came true. His face never changed.',
+    context2:
+      'But the cost never disappeared.\nEvery person he hurt, every lie he told, every crime he committed —\nall of it was written on the painting.\nTonight, time has stopped at 12:30. The portrait is waiting for him upstairs.',
     part1: 'London nights look too clean.\nAs if someone wiped the evidence before you arrived.',
     part2: 'He made a wish:\nLet the portrait take the years. Let the face stay.',
     part3: 'Tonight is the third night.\nThe clock stops at 12:30 and refuses to move.',

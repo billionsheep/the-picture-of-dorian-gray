@@ -2,11 +2,12 @@ export type FlagValue = boolean | number | string
 
 export type Action =
   | { type: 'showText'; text: string }
-  | { type: 'addItem'; itemId: string; name?: string; description?: string }
+  | { type: 'addItem'; itemId: string; name?: string; description?: string; icon?: string }
   | { type: 'removeItem'; itemId: string }
   | { type: 'setFlag'; flag: string; value: FlagValue }
   | { type: 'gotoScene'; sceneId: string }
   | { type: 'changeBackground'; background: string }
+  | { type: 'playVideo'; src: string; skippable?: boolean }
   | { type: 'end'; text: string }
 
 export interface RectConfig {

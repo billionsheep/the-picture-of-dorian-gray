@@ -8,6 +8,10 @@ export const prologueScene: SceneConfig = {
   bgm: 'audio/prologuebgm.ogg',
   bgmOffset: 20,
   startActions: [
+    // 前置世界观说明
+    { type: 'showText', text: TEXT_ASSETS.prologue.context1 },
+    { type: 'showText', text: TEXT_ASSETS.prologue.context2 },
+    // 原有诗意序章
     { type: 'showText', text: TEXT_ASSETS.prologue.part1 },
     { type: 'showText', text: TEXT_ASSETS.prologue.part2 },
     { type: 'showText', text: TEXT_ASSETS.prologue.part3 },

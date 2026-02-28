@@ -80,7 +80,7 @@ export const dressingRoomScene: SceneConfig = {
         success: [
           { type: 'showText', text: TEXT_ASSETS.dressingRoom.lockboxUseCodeSuccess },
           { type: 'showText', text: TEXT_ASSETS.dressingRoom.lockboxUseCodeSuccessGuide },
-          { type: 'addItem', itemId: 'attic_key', name: 'Attic Key' },
+          { type: 'addItem', itemId: 'attic_key', name: 'Attic Key', icon: 'items/attic_key.png' },
           { type: 'removeItem', itemId: 'code_1230' },
           { type: 'setFlag', flag: 'attic_key', value: true },
           { type: 'setFlag', flag: 'lockbox_locked_active', value: false },
@@ -111,7 +111,7 @@ export const dressingRoomScene: SceneConfig = {
         success: [
           { type: 'showText', text: TEXT_ASSETS.dressingRoom.trunkUseHookSuccess },
           { type: 'showText', text: TEXT_ASSETS.dressingRoom.trunkUseHookSuccessGuide },
-          { type: 'addItem', itemId: 'yellow_page', name: 'Yellow Page' },
+          { type: 'addItem', itemId: 'yellow_page', name: 'Yellow Page', icon: 'items/yellow_page.png' },
           { type: 'setFlag', flag: 'trunk_locked_active', value: false },
           { type: 'setFlag', flag: 'trunk_opened_active', value: true },
         ],
