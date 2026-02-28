@@ -1,45 +1,119 @@
-# 格雷画像：绣湖风格点击解谜（Projektseminar）
+# 🎨 The Picture of Dorian Gray — Interactive Puzzle Game
 
-## 这是什么
-一个可在浏览器运行的短篇点击解谜游戏原型，灵感来自 Rusty Lake，主题改编自《道林·格雷的画像》。
+> *An interactive browser-based point-and-click puzzle game adapting Oscar Wilde's novel, inspired by the [Rusty Lake / Cube Escape](https://www.rustylake.com/) series.*
 
-## 当前状态
-- 目标：完成 MVP（第一关画室闭环）+ 文档站点
-- 素材：全部占位（纯色/矩形/文字）
+![Title Screen](docs/screenshots/title.png)
 
-## 运行
+## About
+
+This project reimagines Oscar Wilde's *The Picture of Dorian Gray* (1890) as a **point-and-click puzzle game** set in three interconnected Victorian rooms. Instead of passively reading, the player *embodies* Dorian Gray in the novel's final act — exploring environments, solving puzzles, and making choices that lead to one of **three distinct endings**.
+
+The game was built as a creative project for the **Projektseminar** course (English Literature) at **LMU Munich**.
+
+### Key Features
+
+- 🕯 **Three atmospheric scenes** — Basil's Studio, Theatre Dressing Room, Locked Attic
+- 🧩 **Environmental puzzles** — find items, combine clues, unlock secrets
+- 🎭 **Three moral endings** — Confession, Hypocrisy, or Departure
+- 🎨 **AI-generated Victorian gothic art** — consistent hand-painted sepia aesthetic
+- 🎵 **Atmospheric background music** — scene-specific ambient soundtracks
+- 📖 **Literary depth** — every puzzle mirrors a thematic element from the novel
+
+## 🎮 Play Online
+
+👉 **[https://billionsheep.github.io/the-picture-of-dorian-gray/](https://billionsheep.github.io/the-picture-of-dorian-gray/)**
+
+## Run Locally
+
+### Prerequisites
+- [Node.js](https://nodejs.org/) v18+
+
+### Quick Start
 ```bash
-npm i
+git clone https://github.com/billionsheep/the-picture-of-dorian-gray.git
+cd the-picture-of-dorian-gray
+npm install
 npm run dev
 ```
+Open `http://localhost:5173` in your browser.
 
-## 部署（GitHub Pages + Actions）
+### Build
+```bash
+npm run build
+# Output in dist/ — serve with any static file server
+```
 
-### 1) 已配置内容
-- 工作流：`.github/workflows/deploy.yml`
-  - 触发条件：`main` 分支 push（以及手动 `workflow_dispatch`）
-  - 流程：`npm ci` -> `npm run build` -> 上传 `dist` -> 部署到 Pages
-- Vite base：`vite.config.ts`
-  - 构建时使用 `base: '/the-picture-of-dorian-gray/'`
-  - 本地开发保持 `base: '/'`，不影响 `npm run dev`
+## 🕹 How to Play
 
-### 2) 首次启用 Pages（GitHub 网页操作）
-1. 打开仓库页面：`Settings` -> `Pages`
-2. 在 **Build and deployment** 中选择：
-   - **Source**: `GitHub Actions`
-3. 返回仓库 `Actions` 页，确认 `Deploy to GitHub Pages` 工作流成功
+| Action | How |
+|--------|-----|
+| Examine objects | Click on hotspots in the scene |
+| Collect items | Items appear in the inventory bar (bottom) |
+| Use items | Select an item (click in inventory), then click a target |
+| Navigate | Click exits when you have the right item |
+| Settings | Click ⚙ in the top bar (music toggle, restart) |
 
-### 3) 访问地址
-- 站点 URL：`https://billionsheep.github.io/the-picture-of-dorian-gray/`
+**Playtime:** ~10–15 minutes per playthrough. Multiple runs recommended to see all endings.
 
-### 4) 常见 404 排查
-- **资源 404（js/css 路径错）**：确认 `vite.config.ts` 的 `base` 与仓库名一致（必须是 `/the-picture-of-dorian-gray/`）。
-- **首页 404**：确认 `Settings` -> `Pages` 的 Source 是 `GitHub Actions`，且最新 workflow 为绿色成功。
-- **更新未生效**：检查是否 push 到 `main` 分支；必要时在 `Actions` 页手动重跑部署任务。
-- **仓库改名后异常**：同步修改 `vite.config.ts` 的 `repoBase`，再重新部署。
+## 🏠 Game Structure
 
-## 手动测试
-见：/docs/TEST_PLAN.md
+```
+Title → Prologue → Studio → Dressing Room → Attic → Ending
+                      ↑          ↑              ↓
+                      └──────────┘         3 possible endings
+```
 
-## 项目说明（写给课程）
-见：/docs/REQUIREMENTS.md 和 /docs/GAME_DESIGN.md
+### Three Endings
+
+| Ending | Condition | Theme |
+|--------|-----------|-------|
+| **Confession** | Keep the evidence, use the knife | Genuine remorse — mirrors the novel's conclusion |
+| **Hypocrisy** | Burn the evidence, then use the knife | Self-deception — Dorian dies believing he fooled everyone |
+| **Departure** | Walk away through the door | Cowardice — the portrait rots alone |
+
+## 🛠 Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Game engine | [Phaser 3](https://phaser.io/) |
+| Language | TypeScript |
+| Build tool | [Vite](https://vitejs.dev/) |
+| Art | AI-generated (Victorian gothic, sepia palette) |
+| Architecture | Data-driven scene configs + generic engine |
+
+## 📁 Project Structure
+
+```
+├── public/
+│   ├── audio/           # Background music (.ogg)
+│   ├── backgrounds/     # Scene backgrounds (.png)
+│   └── items/           # Inventory icons (.png)
+├── src/
+│   ├── content/
+│   │   ├── scenes/      # Scene configs (hotspots, puzzles, flags)
+│   │   └── textAssets.ts # All game dialogue
+│   └── game/
+│       ├── core/        # Schema, scene loader
+│       └── scenes/      # PlayScene engine
+└── docs/
+    ├── game_script.md   # Complete game text
+    └── projektseminar_documentation.md
+```
+
+## 📝 Academic Context
+
+This game was developed as a creative project for the **Projektseminar** (English Literature) at **Ludwig-Maximilians-Universität München (LMU)**, supervised by Prof. Dr. Ingo Berensmeyer.
+
+The project explores how interactive media can serve as a tool for literary engagement — translating the thematic concerns of Wilde's novel (vanity, moral decay, the cost of aesthetic obsession) into puzzle mechanics and player choice. See [`docs/projektseminar_documentation.md`](docs/projektseminar_documentation.md) for the full project report.
+
+## Credits
+
+- **Game design & development:** Xi C.
+- **Original novel:** Oscar Wilde, *The Picture of Dorian Gray* (1890/1891)
+- **Visual inspiration:** [Rusty Lake Studio](https://www.rustylake.com/)
+- **Game framework:** [Phaser 3](https://phaser.io/) (MIT License)
+- Art assets generated with AI assistance; background music sourced for atmospheric use.
+
+## License
+
+This project is open-sourced for educational purposes. The game text is an original creative adaptation and is not a reproduction of Wilde's novel (which is in the public domain).
